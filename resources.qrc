@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/alocacao_otimizada" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

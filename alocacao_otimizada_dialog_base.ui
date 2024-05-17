@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>alocacaoOtimizadaDialogBase</class>
+ <widget class="QDialog" name="alocacaoOtimizadaDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>815</width>
+    <height>677</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Alocação Otimizada de Pátios</string>
+  </property>
+  <widget class="QDialogButtonBox" name="button_box">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>630</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="heuristica">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>791</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Heurística</string>
+   </property>
+   <widget class="QLabel" name="num_iteracoes">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>320</y>
+      <width>191</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Número de Iterações</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditNUM_ITERACOES">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>320</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditFlexSup">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>290</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="flexSup">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>290</y>
+      <width>191</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Percentual de Relaxamento</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="numeroPatios">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>260</y>
+      <width>191</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Número de Pátios</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditNumeroPatios">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>260</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="distArvorePatio">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>230</y>
+      <width>191</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Distancia Máxima Entre Pátio e Árvore</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditDistArvorePatio">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>230</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>80</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="xArvore">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>80</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="yArvore">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>110</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="zArvore">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>140</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada Z</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>110</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_3">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>140</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="patios">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>50</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pátios</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxPatios">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>50</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="xPatio">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>80</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="yPatio">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>110</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="zPatio">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>140</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Coordenada Z</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_4">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>80</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_5">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>110</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_6">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>140</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="arvoreExploravel">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>50</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Árvore Explorável</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxArvoreExploravel">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>50</y>
+      <width>211</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="sa">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>380</y>
+     <width>791</width>
+     <height>241</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>SA</string>
+   </property>
+   <widget class="QLabel" name="taxaResfriamento">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>50</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Taxa de Resfriamento</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="iteracoesVizinhanca">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>80</y>
+      <width>121</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Iterações na Vizinhança</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="temperaturaInicial">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>110</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Temperatura Inicial</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="temperaturaCongelamento">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>140</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Temperatura de Congelamento</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditTaxaResfriamento">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>50</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditIteracoesVizinhanca">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>80</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditTemperaturaInicial">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>110</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditTemperaturaCongelamento">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>140</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxUsarTempo">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>190</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Usar Tempo?</string>
+    </property>
+   </widget>
+  </widget>
+  <zorder>heuristica</zorder>
+  <zorder>button_box</zorder>
+  <zorder>sa</zorder>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_box</sender>
+   <signal>accepted()</signal>
+   <receiver>alocacaoOtimizadaDialogBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_box</sender>
+   <signal>rejected()</signal>
+   <receiver>alocacaoOtimizadaDialogBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
