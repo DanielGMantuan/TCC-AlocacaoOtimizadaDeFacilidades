@@ -94,11 +94,8 @@ class Heuristicas:
             cont = cont + 1
             res = self.obterSolAleatoria(floresta, distancias, restVolSup)
 
-            # print(res.FO)
-            # print(melhorSol.FO)
             if res.FO < melhorSol.FO: # se a FO atual é melhor que a anterior e viável, então aceita a atual
                 melhorSol = res
-                # print(melhorSol.FO)
                 melhorSol.tempoSol = (datetime.now() - tInicio).total_seconds()
 
             if res.viavel:

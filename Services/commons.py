@@ -2,7 +2,7 @@ from math import sqrt, pow, inf as INFINITY
 from ..Models.Area import Area
 from ..Models.ArvoreExploravel import ArvoreExploravel
 from ..Models.Patio import Patio
-from typing import List
+from typing import List, Optional
 from ..Models.SolucaoStorageYard import SolucaoStorageYard
 from ..Models.Desvio import Desvio
 from ..Models.Inclinacao import Inclinacao
@@ -26,24 +26,28 @@ def calculaDistancia2D(origem, destino):
     distancia = sqrt(pow(origem.x - destino.x, 2) + pow(origem.y - destino.y, 2))
     return distancia
 
-def calculaDistanciaPenalizada(distanciaOrigDest: float, destino: Area, desvios: list[Desvio], app: list[int], inund: list[int], inclinacao: list[Inclinacao]) -> float:
-    indApp = buscaAPP(app, (destino.id - 1))
-    indInund = buscaInund(inund, (destino.id - 1))
-    indObstaculo = buscaDesvioRaio(desvios, destino)
-    if(indObstaculo):
-        distanciaOrigDest = distanciaOrigDest * PENALIZACAO_OBSTACULO
-    if(indApp):
-        distanciaOrigDest = distanciaOrigDest * PENALIZACAO_APP
-    if(indInund):
-        distanciaOrigDest = distanciaOrigDest * PENALIZACAO_INUND
+def calculaDistanciaPenalizada(distanciaOrigDest: float, destino: Area, desvios: Optional[list[Desvio]], app: Optional[list[int]], inund: Optional[list[int]], inclinacao: list[Inclinacao]) -> float:
+    if(app != None):
+        indApp = buscaAPP(app, (destino.id - 1))
+        if(indApp):
+            distanciaOrigDest = distanciaOrigDest * PENALIZACAO_APP
+    if(inund != None):
+        indInund = buscaInund(inund, (destino.id - 1))
+        if(indInund):
+            distanciaOrigDest = distanciaOrigDest * PENALIZACAO_INUND
+    if(desvios != None):
+        indObstaculo = buscaDesvioRaio(desvios, destino)
+        if(indObstaculo):
+            distanciaOrigDest = distanciaOrigDest * PENALIZACAO_OBSTACULO
     distanciaOrigDest = distanciaOrigDest * buscaInclinacao(inclinacao, (destino.id - 1))
     return distanciaOrigDest
 
-def calculaDistanciaDesviosPenalizada(origem, destino, desvios: list[Desvio]) -> float:
-    indObstaculo = buscaDesvioRaio(desvios, destino)
+def calculaDistanciaDesviosPenalizada(origem, destino, desvios: Optional[list[Desvio]]) -> float:
     distancia = calculaDistancia(origem, destino)
-    if(indObstaculo):
-        distancia *= PENALIZACAO_OBSTACULO
+    if(desvios != None):
+        indObstaculo = buscaDesvioRaio(desvios, destino)
+        if(indObstaculo):
+            distancia *= PENALIZACAO_OBSTACULO
 
     return distancia
 

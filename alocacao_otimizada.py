@@ -24,6 +24,8 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt import QtWidgets
+from qgis.core import QgsProject
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -32,10 +34,7 @@ from .alocacao_otimizada_dialog import alocacaoOtimizadaDialog
 from .road_screen2_dialog import interface
 import os.path
 
-from qgis.core import QgsProject
-
 import math # sqrt, pow
-
 from random import seed, randint # seed, randomint
 from datetime import datetime # datetime
 import sys # maxint
@@ -51,6 +50,8 @@ from .Models.SolucaoRoad import AccessRoad
 from .Models.SolucaoStorageYard import SolucaoStorageYard
 from .ExecutarTrilhas import ExecutarTrilhas
 from .Services.commons import marcaArvoresPatios, quantidadeArvoresPatio
+from .Exceptions.LayerException import LayerException, MultipleLayerException
+from .Exceptions.SimulatedAnnealingException import SimulatedAnnealingException, MultipleSimulatedAnnealingExceptionException 
 
 seed(1)
 
@@ -202,55 +203,68 @@ class alocacao_otimizada:
             self.iface.removeToolBarIcon(action)
 
     def runProcStorageYard(self, layers, dlg):
+        multipleExceptions = MultipleLayerException()
+
         verticesIndex = dlg.cmb_vertices.currentIndex()
-        camadaVertices = layers[verticesIndex].layer()
+        if(verticesIndex != 0):
+            camadaVertices = layers[verticesIndex - 1].layer()
+        else:
+            multipleExceptions.exceptions.append(LayerException("verticeLayer"))
 
         patiosIndex = dlg.cmb_patios.currentIndex()
-        camadaPatio = layers[patiosIndex].layer()
+        if(patiosIndex != 0):
+            camadaPatio = layers[patiosIndex - 1].layer()
+        else:
+            multipleExceptions.exceptions.append(LayerException("patioLayer"))
 
         floresta_expIndex = dlg.cmb_arvExp.currentIndex()
-        camadaFloresta_exp = layers[floresta_expIndex].layer()
-
-        inundacaoIndex = dlg.cmb_inundacao.currentIndex()
-        camadaInundacao = layers[inundacaoIndex].layer()
-
-        appIndex = dlg.cmb_app.currentIndex()
-        camadaApp = layers[appIndex].layer()
+        if(floresta_expIndex != 0):
+            camadaFloresta_exp = layers[floresta_expIndex - 1].layer()
+        else:
+            multipleExceptions.exceptions.append(LayerException("FlorestaLayer"))
 
         inclinacaoIndex = dlg.cmb_inclinacao.currentIndex()
-        camadaInclinacao = layers[inclinacaoIndex].layer()
+        if(inclinacaoIndex != 0):
+            camadaInclinacao = layers[inclinacaoIndex - 1].layer()
+        else:
+            multipleExceptions.exceptions.append(LayerException("InclinacaoLayer"))
+        
+        if(len(multipleExceptions.exceptions) > 0):
+            QtWidgets.QMessageBox.critical(dlg, "Error", multipleExceptions.__str__())
+            return
+        
+        dicionario = {}
+        inundacaoIndex = dlg.cmb_inundacao.currentIndex()
+        if(inundacaoIndex != 0):
+            camadaInundacao = layers[inundacaoIndex - 1].layer()
+            dicionario["inundacao"] = True
+        else:
+            dicionario["inundacao"] = False
+
+        appIndex = dlg.cmb_app.currentIndex()
+        if(appIndex != 0):
+            camadaApp = layers[appIndex - 1].layer()
+            dicionario["app"] = True
+        else:
+            dicionario["app"] = False
 
         arvoreRemanescenteIndex = dlg.cmb_arvoresRemanescentes.currentIndex()
-        camadaArvoreRemanescente = layers[arvoreRemanescenteIndex].layer()
-
-
-        # MOCK dos valores
-        DISTANCIA_MAXIMA = 379
-        NUM_PATIOS = 14
-        NUM_ITERACOES = 20000
-        FLEXSUP = 10
-
-        """TAXARESFRIAMENTO_YARD = 0.985
-        ITERACOESVIZINHANCA_YARD = 500
-        TEMPERATURAINICIAL_YARD = 1000
-        TEMPERATURACONGELAMENTO_YARD = 0.001"""
-
-        # parametros para patios
-        TAXARESFRIAMENTO_YARD = 0.985
-        ITERACOESVIZINHANCA_YARD = 500
-        TEMPERATURAINICIAL_YARD = 1000
-        TEMPERATURACONGELAMENTO_YARD = 0.001
+        if(arvoreRemanescenteIndex != 0):
+            camadaArvoreRemanescente = layers[arvoreRemanescenteIndex - 1].layer()
+            dicionario["arvoresRemanescente"] = True
+        else:
+            dicionario["arvoresRemanescente"] = False
 
         # ----------------Heurística-----------------
 
-        # DISTANCIA_MAXIMA = float(dlg.lineEditDistArvorePatio.text())
+        DISTANCIA_MAXIMA = float(dlg.lineEditDistArvorePatio.text())
 
-        # NUM_PATIOS = int(dlg.lineEditNumeroPatios.text())
+        NUM_PATIOS = int(dlg.lineEditNumeroPatios.text())
 
-        # FLEXSUP = float(dlg.lineEditFlexSup.text())
+        FLEXSUP = float(dlg.lineEditFlexSup.text())
         FLEXSUP = FLEXSUP / 100
 
-        # NUM_ITERACOES = int(dlg.lineEditNUM_ITERACOES.text())
+        NUM_ITERACOES = int(dlg.lineEditNUM_ITERACOES.text())
 
         NUM_ROADS = NUM_PATIOS + 1
 
@@ -266,21 +280,37 @@ class alocacao_otimizada:
 
         # ---------------- SA -----------------
 
-        # TAXARESFRIAMENTO_YARD = float(dlg.lineEditTaxaResfriamento.text())
+        useSimulatedAnnealing = dlg.SA.isChecked()
 
-        # ITERACOESVIZINHANCA_YARD = float(dlg.lineEditIteracoesVizinhanca.text())
+        if(useSimulatedAnnealing):
+            SAExceptions = []
 
-        # TEMPERATURAINICIAL_YARD = float(dlg.lineEditTemperaturaInicial.text())
+            try:
+                TAXARESFRIAMENTO_YARD = float(dlg.lineEditTaxaResfriamento.text())
+            except:
+                SAExceptions.append("Taxa de resfriamento E invalida")
+            
+            try:
+                ITERACOESVIZINHANCA_YARD = float(dlg.lineEditIteracoesVizinhanca.text())
+            except:
+                SAExceptions.append("Iteracoes de vizinhanca E invalida")    
+            
+            try:
+                TEMPERATURAINICIAL_YARD = float(dlg.lineEditTemperaturaInicial.text())
+            except:
+                SAExceptions.append("Temperatura inicial E invalida")
 
-        # TEMPERATURACONGELAMENTO_YARD = float(dlg.lineEditTemperaturaCongelamento.text())
+            try:
+                TEMPERATURACONGELAMENTO_YARD = float(dlg.lineEditTemperaturaCongelamento.text())
+            except:                
+                SAExceptions.append("Temperatura de congelamento E invalida")
 
-        usarTempo = dlg.checkBoxUsarTempo.isChecked()
+            if(len(SAExceptions) > 0):
+                message = "\n".join(SAExceptions)
+                QtWidgets.QMessageBox.critical(dlg, "Erro no SA", message)
+                return
 
         #--------------------- Tempos -----------------
-
-        # TEMPOEXEC = 1800
-
-        # TEMPOEXEC = 24 * 60 * 60
 
         TEMPOEXEC = 12 * 60 * 60
 
@@ -293,13 +323,22 @@ class alocacao_otimizada:
 
         arvoresExploraveis = preProcLayer.lerInstanciaArvoresExploraveis(camadaFloresta_exp)
 
-        desvios = preProcLayer.lerInstanciaArvoresRemanescentes(camadaArvoreRemanescente)
-
-        inuncao = preProcLayer.lerInstanciaInundacao(camadaInundacao)
-
-        app = preProcLayer.lerInstanciaAPP(camadaApp)
-
         inclinacao = preProcLayer.lerInstanciaInclinacao(camadaInclinacao)
+
+        if(dicionario["arvoresRemanescente"]):
+            desvios = preProcLayer.lerInstanciaArvoresRemanescentes(camadaArvoreRemanescente)
+        else:
+            desvios = None
+
+        if(dicionario["inundacao"]):
+            inuncao = preProcLayer.lerInstanciaInundacao(camadaInundacao)
+        else:
+            inuncao = None
+        
+        if(dicionario["app"]):
+            app = preProcLayer.lerInstanciaAPP(camadaApp)
+        else:
+            app = None
 
         # Pega o mock dos valores de distancia
         distanciasPatArv = preProcLayer.lerArquivoDistancias()
@@ -312,95 +351,84 @@ class alocacao_otimizada:
 
         heuristica = Heuristicas(NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME)
 
-        newSolucao: SolucaoStorageYard = SolucaoStorageYard()
-        newSolucao.patios = [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]
-        # # # [537, 268, 1344, 1065, 1405, 750, 1494, 415, 291, 304, 1373, 950, 720, 173]
-        # # # [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
-        # # # [1525, 1434, 1401, 1086, 1371, 969, 734, 547, 296, 423, 273, 176, 764, 257]
+        # newSolucao: SolucaoStorageYard = SolucaoStorageYard()
+        # newSolucao.patios = [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]
+        # # # # [537, 268, 1344, 1065, 1405, 750, 1494, 415, 291, 304, 1373, 950, 720, 173]
+        # # # # [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # # # # [1525, 1434, 1401, 1086, 1371, 969, 734, 547, 296, 423, 273, 176, 764, 257]
 
-        newSolucao = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, newSolucao, restVolSup)
+        # newSolucao = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, newSolucao, restVolSup)
 
-        #---------------DEFININDO GRAFO-----------------
+        # #---------------DEFININDO GRAFO-----------------
 
-        grafo = Grafo()
-        grafo.cria_Grafo(NUM_VERTICES, 8, 1)
-        grafo.insereArestaArea(area, desvios, inuncao, app, inclinacao)
+        # grafo = Grafo()
+        # grafo.cria_Grafo(NUM_VERTICES, 8, 1)
+        # grafo.insereArestaArea(area, desvios, inuncao, app, inclinacao)
 
-        # -------------- ROADS -------------
+        # # -------------- ROADS -------------
         
-        NUM_ACCESS_ROAD = 1
-        estradaDeAcesso = AccessRoad()
-        solRoad_aux = RoadsAprovTrecho()
-        estradaDeAcesso.inicio.append(1)
-        solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, newSolucao, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
+        # NUM_ACCESS_ROAD = 1
+        # estradaDeAcesso = AccessRoad()
+        # solRoad_aux = RoadsAprovTrecho()
+        # estradaDeAcesso.inicio.append(1)
+        # solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, newSolucao, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
 
-        # -------------- TRAILS -------------
-        arvoreSelPatios = marcaArvoresPatios(newSolucao, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
-        quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
-        trilha = ExecutarTrilhas()
-        solTrilha = trilha.trails( area, solRoad, patios, newSolucao, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
+        # # -------------- TRAILS -------------
+        # arvoreSelPatios = marcaArvoresPatios(newSolucao, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
+        # quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
+        # trilha = ExecutarTrilhas()
+        # solTrilha = trilha.trails( area, solRoad, patios, newSolucao, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
+        # # newSolucao.fileWritter(0, restVolSup)
+        # # geraPontosMemoy(newSolucao, camadaPatio, 0)
+        # # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 0)
+        # # for j in range(len(newSolucao.arvores)):
+        # #     geraPontosArvores(newSolucao.arvores[j], arvoresExploraveis, newSolucao.patios[j], 0)
+        # # geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+        # # geraTrilhas(solTrilha, area)
 
-        # print("\n============= SOLUCAO ROADS ===================\n")
-        # print(solRoad.__str__())
+        for i in range(1):
+            #---------------DEFININDO NUMERO DE ACESSOS-----------------    
+            estradaDeAcesso = getAccesPoints(dlg)
+            NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
 
-        # newSolucao.fileWritter(0, restVolSup)
-        # geraPontosMemoy(newSolucao, camadaPatio, 0)
-        # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 0)
-        # for j in range(len(newSolucao.arvores)):
-        #     geraPontosArvores(newSolucao.arvores[j], arvoresExploraveis, newSolucao.patios[j], 0)
-        geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-        geraTrilhas(solTrilha, area)
+            if(NUM_ACCESS_ROAD == 0):
+                QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
+                return
 
-        for i in range(0):
             solPatios = SolucaoStorageYard()
             solPatios = heuristica.heuConstrutivaIter(arvoresExploraveis, distanciasPatArv, NUM_ITERACOES, restVolSup)
 
-            if usarTempo == True:
+            if useSimulatedAnnealing == True:
                 sa = SA(NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, TEMPOEXEC)
                 solPatios = sa.SAStorageYard(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup, TAXARESFRIAMENTO_YARD, ITERACOESVIZINHANCA_YARD, TEMPERATURAINICIAL_YARD, TEMPERATURACONGELAMENTO_YARD)
-            else:
-                pass
 
             #---------------DEFININDO GRAFO-----------------
             grafo = Grafo()
             grafo.cria_Grafo(NUM_VERTICES, 8, 1)
             grafo.insereArestaArea(area, desvios, inuncao, app, inclinacao)
 
-            print("\n============= GRAFO ===================\n")
-            grafo.__str__()
-
-            NUM_ACCESS_ROAD = int(1)
-            estradaDeAcesso = AccessRoad()
-            estradaDeAcesso.inicio.append(0)
-
-
             # -------------- ROADS -------------
             solRoad_aux = RoadsAprovTrecho()
             solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, solPatios, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
 
             # -------------- TRAILS -------------
-            # # arvoreSelPatios = marcaArvoresPatios(solPatios, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
-            # # quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
-            # solRoad_1 = ExecutarTrilhas()
-            # solTrilha = solRoad_1.trails( vetVertices, solRoad, vetPatiosBeta, solPatios, vetFlorestaBeta, arvoreSelPatios, distanciasPatArv, vetApp, quantidadeArvores, restVolSup, vetDevios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
+            arvoreSelPatios = marcaArvoresPatios(solPatios, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
+            quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
+            trilha = ExecutarTrilhas()
+            solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
+            # solPatios.fileWritter(i, restVolSup)
 
-            print("\n============= SOLUCAO ROADS ===================\n")
-            print(solRoad.__str__())
-
-            solPatios.fileWritter(i, restVolSup)
-
-            # geraPontosMemoy(solPatios, camadaPatio, i)
             geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
             geraPontosPatiosMarcelo(solPatios, camadaPatio, i)
+            geraTrilhas(solTrilha, area)
             #TODO: esta com problema aqui
-            geraTrilhas(solucaoTrilha, area)
+            # geraTrilhas(solucaoTrilha, area)
             # for j in range(len(solPatios.arvores)):
             #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], i)
 
-
-        print("terminou")
+        QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 
     def run(self):
         """Run method that performs all the real work"""
@@ -416,18 +444,31 @@ class alocacao_otimizada:
         # self.dlg.comboBoxAPP.clear()
         # self.dlg.comboBoxAPP.addItems([layers.name() for layers in layers])
         self.dlg.cmb_vertices.clear()
+        self.dlg.cmb_vertices.addItem('None') 
         self.dlg.cmb_vertices.addItems([layers.name() for layers in layers])
-        self.dlg.cmb_patios.clear()
+
+        self.dlg.cmb_patios.clear() 
+        self.dlg.cmb_patios.addItem("None")
         self.dlg.cmb_patios.addItems([layers.name() for layers in layers])
+        
         self.dlg.cmb_arvExp.clear()
+        self.dlg.cmb_arvExp.addItem("None")
         self.dlg.cmb_arvExp.addItems([layers.name() for layers in layers])
+        
         self.dlg.cmb_inundacao.clear()
+        self.dlg.cmb_inundacao.addItem("None")
         self.dlg.cmb_inundacao.addItems([layers.name() for layers in layers])
+        
         self.dlg.cmb_app.clear()
+        self.dlg.cmb_app.addItem("None")
         self.dlg.cmb_app.addItems([layers.name() for layers in layers])
+        
         self.dlg.cmb_inclinacao.clear()
+        self.dlg.cmb_inclinacao.addItem("None")
         self.dlg.cmb_inclinacao.addItems([layers.name() for layers in layers])
+        
         self.dlg.cmb_arvoresRemanescentes.clear()
+        self.dlg.cmb_arvoresRemanescentes.addItem("None")
         self.dlg.cmb_arvoresRemanescentes.addItems([layers.name() for layers in layers])
 
         # self.dlg.doubleSpinBoxDistArvorePatio.clear()
@@ -441,339 +482,8 @@ class alocacao_otimizada:
             # print(sol.__str__())
             self.runProcStorageYard(layers, self.dlg)
 
-
-
-
-
-
-#--------------------------------------Backup----------------------------------------
-
-"""
-            camadaSolucao = QgsVectorLayer("Point", "Solução", "memory")
-
-            so = camadaSolucao.dataProvider()
-            so.addAttributes([QgsField("ID", QVariant.Int),
-                                QgsField("POINT_X", QVariant.Double),
-                                QgsField("POINT_Y", QVariant.Double),
-                                QgsField("ALTITUDE", QVariant.Double)])
-            camadaSolucao.updateFields()
-
-            for patioFeature in camadaPatio.getFeatures():
-                f = QgsFeature()
-                f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(patioFeature.attribute("POINT_X"), patioFeature.attribute("POINT_Y"))))
-                # f.setGeometry(QgsGeometry.fromWkt('Point(' + str(patioFeature.attribute("POINT_X")) + ' ' +  str(patioFeature.attribute("POINT_Y")) + ')'))
-                f.setAttributes([patioFeature.attribute("Id"), patioFeature.attribute("POINT_X"), patioFeature.attribute("POINT_Y"), patioFeature.attribute("ALTITUDE")])
-                so.addFeature(f)
-
-            camadaSolucao.updateExtents()
-            QgsProject.instance().addMapLayer(camadaSolucao)
-
-            class SolucaoStorageYard:
-                patios = []
-                volumes = []
-                distanciaTotal = 0
-                FO = 0.0
-                tempoSol = 0
-                tempo = 0
-                numIteracoes = 0
-                numViaveis = 0
-                numInviaveis = 0
-                viavel = True
-
-                # def __init__(self, solucao):
-                #     self.patios = solucao.patios
-                #     self.volumes = solucao.volumes
-                #     self.distanciaTotal = solucao.distanciaTotal
-                #     self.FO = solucao.FO
-                #     self.tempoSol = solucao.tempoSol
-                #     self.tempo = solucao.tempo
-                #     self.numIteracoes = solucao.numIteracoes
-                #     self.numViaveis = solucao.numViaveis
-                #     self.numInviaveis = solucao.numInviaveis
-                #     self.viavel = solucao.viavel
-
-                def __str__(self):
-                    print("patios")
-                    print(self.patios)
-                    print("volumes")
-                    print(self.volumes)
-                    print("distanciaTotal")
-                    print(self.distanciaTotal)
-                    print("FO")
-                    print(self.FO)
-                    print("tempoSol")
-                    print(self.tempoSol)
-                    print("tempo")
-                    print(self.tempo)
-                    print("numIteracoes")
-                    print(self.numIteracoes)
-                    print("numViaveis")
-                    print(self.numViaveis)
-                    print("numInviaveis")
-                    print(self.numInviaveis)
-                    print("viavel")
-                    print(self.viavel)
-
-
-            def criaMatrizDistancias(self, patios, floresta_exp):
-                matriz = []
-                #linha = []
-
-                #for arvore in floresta_exp:
-                for arvore in floresta_exp.getFeatures():
-                    linha = []
-                    #for patio in patios:
-                    for patio in patios.getFeatures():
-                        elemento = math.sqrt(math.pow((arvore.attribute("X_Este") - patio.attribute("POINT_X")), 2) + math.pow((arvore.attribute("Y_Norte") - patio.attribute("POINT_Y")), 2) + math.pow((arvore.attribute("z") - patio.attribute("ALTITUDE")), 2))
-                        linha.append(elemento)
-                        #linha += [(math.sqrt(math.pow((arvore.attribute("X_Este") - patio.attribute("POINT_X")), 2) + math.pow((arvore.attribute("Y_Norte") - patio.attribute("POINT_Y")), 2) + math.pow((arvore.attribute("z") - patio.attribute("ALTITUDE")), 2)))]
-                    #matriz += [linha]
-                    matriz.append(linha)
-
-                return matriz
-
-            def criaVetorVolume(self, floresta_exp):
-                vetor = []
-
-                for arvore in floresta_exp.getFeatures():
-                    # vetor += [arvore.attribute("Volume_Eq")]
-                    vetor.append(arvore.attribute("Volume_Eq"))
-
-                return vetor
-
-            def calculaVolume(self, vetorVolume):
-                volumeTotal = 0
-
-                for i in range(NUM_ARVORES_EXPLORAVEIS):
-                    volumeTotal = volumeTotal + vetorVolume[i]
-
-                return volumeTotal
-
-            def calculaFOPatio(self, vetorVolume, distancias, solAtual, restVolSup):
-                patio = 0
-                distancia = 0
-                distanciaMenor = 0
-                diferencaVolume = 0
-                diferencaDistancia = 0
-                distanciaTotal = 0
-
-                res = solAtual
-                for i in range(NUM_PATIOS):
-                    res.volumes[i] = 0
-
-                for j in range(NUM_ARVORES_EXPLORAVEIS):
-                # for j in range(50):
-                    distanciaMenor = math.inf
-                    patio = 0
-                    for k in range(NUM_PATIOS):
-                        # print(j)
-                        # print(res.patios[k])
-                        # print(distancia)
-                        distancia = distancias[j][res.patios[k] - 1]
-                        # distancia = distancias[j][res.patios[k]]
-                        if distancia < distanciaMenor:
-                            distanciaMenor = distancia
-                            patio = k
-
-                    if distanciaMenor > DISTANCIA_MAXIMA:
-                        diferencaDistancia = diferencaDistancia + distanciaMenor - DISTANCIA_MAXIMA
-                    distanciaTotal = distanciaTotal + distanciaMenor
-
-                    # preencher volume por pátio
-                    res.volumes[patio] = res.volumes[patio] + vetorVolume[j]
-
-                for w in range(NUM_PATIOS):
-                    if res.volumes[w] > restVolSup:
-                        diferencaVolume = diferencaVolume + (res.volumes[w] - restVolSup)
-
-                res.distanciaTotal = distanciaTotal
-                # penalizando solução inviável
-                distanciaTotal = distanciaTotal + (PENALIZACAO_VOLUME * (diferencaVolume + diferencaDistancia)) # penalizacao é o theta e diferença é g()
-
-                res.FO = distanciaTotal
-                # res.viavel = (diferencaVolume + diferencaDistancia) == 0
-                if (diferencaVolume + diferencaDistancia) > 0:
-                    res.viavel = False
-                return res
-
-            def obterSolAleatoria(self, vetorVolume, distancias, restVolSup):
-                patio = 0
-                patios = []  # vetor que vai guardar a informação dos patios que já foram selecionados
-                res = SolucaoStorageYard()
-
-                res.patios = []
-                res.volumes = []
-
-                for i in range(NUM_PATIOS):
-                    res.patios.append(0)
-                    res.volumes.append(0)
-
-                for i in range(NUM_VERTICES_PATIOS):
-                    patios.append(0)
-
-                # gera os números aleatórios de acordo com o número de pátios
-                for i in range(NUM_PATIOS):
-                    # garante que será gerado um número aleatório sem repetição
-                    while True:
-                        # patio = 1 + (randint(1, 32767) % NUM_VERTICES_PATIOS) # 32767 = RAND_MAX no C
-                        patio = randint(1, NUM_VERTICES_PATIOS)
-                        if patios[patio - 1] != 1:
-                            break
-                    # depois de selecionar um número, marca ele como já tendo sido selecionado e atribui ao pátio
-                    patios[patio - 1] = 1
-                    res.patios[i] = patio
-
-                res = calculaFOPatio(self, vetorVolume, distancias, res, restVolSup)
-                return res
-
-            def heuConstrutivaIter(self, vetorVolume, distancias, num_iteracoes, restVolSup):
-                tInicio = datetime.now()
-                i = 0
-                cont = 0
-                contViaveis = 0
-                melhorSol = SolucaoStorageYard()
-                melhorSol.FO = math.inf  # variaveis para controle da FO
-                melhorSol.numViaveis = 0
-                melhorSol.numInviaveis = 0
-                res = SolucaoStorageYard()
-
-                # laço que faz a busca aleatório e gulosa
-                for i in range(num_iteracoes):
-                    cont = cont + 1
-                    res = obterSolAleatoria(self, vetorVolume, distancias, restVolSup)
-
-                    # print(res.FO)
-                    # print(melhorSol.FO)
-                    if res.FO < melhorSol.FO: # se a FO atual é melhor que a anterior e viável, então aceita a atual
-                        melhorSol = res
-                        # print(melhorSol.FO)
-                        melhorSol.tempoSol = (datetime.now() - tInicio) / 100.0
-
-                    if res.viavel == True:
-                        contViaveis = contViaveis + 1
-
-                melhorSol.tempo = (datetime.now() - tInicio) / 100.0
-                melhorSol.numIteracoes = cont
-                melhorSol.numViaveis = contViaveis
-                melhorSol.numInviaveis = cont - contViaveis
-
-                return melhorSol
-
-            def SAStorageYard(self, vetorVolume, distancias, solInicial, restVolSup, txResfriamento, iteracoesVizinhanca, tempInicial, tempCongelamento):
-                # inicializando variáveis
-                tfInicio = datetime.now() # get_time
-                i = 0
-                j = 0
-                k = 0
-                patio = 0
-                cont = 0
-                contViaveis = 0
-                contInviaveis = 0
-                tInicio = time.time() # inicializando o tempo atual
-                # tFim = tInicio + (TEMPOEXEC * CLOCKS_PER_SEC) # determinando o tempo de duração do laço externo
-                tFim = TEMPOEXEC
-
-                melhorSol = solInicial
-                solucaoInicial = solInicial
-                vizinho = SolucaoStorageYard()
-                melhorSol.numViaveis = 0
-                melhorSol.numInviaveis = 0
-                patios = []
-                for i in range(NUM_VERTICES_PATIOS):
-                    patios.append(0)   # vetor que vai guardar a informação dos patios que já foram selecionados
-
-                # marcando com 1 os elementos da solução inicial
-                for k in range(NUM_PATIOS):
-                    patio = solucaoInicial.patios[k]
-                    patios[patio - 1] = 1
-
-                # inicializando variáveis
-                IterTemp = 0                   # numero de iterações na temperatura T
-                temp = tempInicial             # temperatura corrente
-                x = 0.0
-                variacao = 0.0
-
-                while temp > tempCongelamento and time.time() - tInicio < tFim:
-                    while IterTemp < iteracoesVizinhanca and time.time() - tInicio < tFim:
-
-                        IterTemp = IterTemp + 1
-                        cont = cont + 1
-                        vizinho = gerarVizinhoPatio(self, vetorVolume, distancias, solucaoInicial, patios, restVolSup)
-                        # obtendo a variação da solução inicial para o vizinho
-                        variacao = vizinho.FO - solucaoInicial.FO
-
-                        if vizinho.viavel == True:
-                            contViaveis = contViaveis + 1
-                        else:
-                            contInviaveis = contInviaveis + 1
-
-                        # atualizando matriz de pátios
-                        for i in range(NUM_VERTICES_PATIOS):
-                            patios[i] = 0
-
-                        # se a variação é menor q zero, então melhorou
-                        if variacao < 0:
-                            # melhorou a solução inicial em relação ao vizinho
-                            solucaoInicial = vizinho
-                            for i in range(NUM_PATIOS):
-                                patio = vizinho.patios[i]
-                                patios[patio - 1] = 1
-
-                            if vizinho.FO < melhorSol.FO:
-                                # melhorou a melhor até o momento em relação ao vizinho
-                                melhorSol = vizinho
-                                melhorSol.tempoSol = ((datetime.now() - tfInicio) / 100.0) # get_time
-                        else:
-                            # x = (randint(1, 32767) % 1001)
-                            x = randint(1, 1001)
-                            x /= 1000;
-                            if x < math.pow(math.e, (-variacao / temp)):
-                                # atualizando matriz da solução atual
-                                # pega o vizinho mesmo este não sendo melhor
-                                solucaoInicial = vizinho
-                                for i in range(NUM_PATIOS):
-                                    patio = vizinho.patios[i]
-                                    patios[patio - 1] = 1
-                            else:
-                                # corrige solução atual
-                                for j in range(NUM_PATIOS):
-                                    patio = solucaoInicial.patios[j]
-                                    patios[patio - 1] = 1
-
-                    temp = txResfriamento * temp
-
-                    # re-annealing
-                    if temp < (tempCongelamento + (tempCongelamento * 2)) and time.time() - tInicio < tFim:
-                        temp = tempInicial
-
-                    IterTemp = 0
-
-                melhorSol.tempo = (datetime.now() - tfInicio) / 100.0 # get_time
-                melhorSol.numIteracoes = cont
-                melhorSol.numViaveis = contViaveis
-                melhorSol.numInviaveis = contInviaveis
-                return melhorSol
-
-            def geraPontos(self, solPatios, patios):
-                camadaSolucao = QgsVectorLayer("Point", "Solução", "memory")
-
-                so = camadaSolucao.dataProvider()
-                so.addAttributes([QgsField("ID", QVariant.Int),
-                                    QgsField("POINT_X", QVariant.Double),
-                                    QgsField("POINT_Y", QVariant.Double),
-                                    QgsField("ALTITUDE", QVariant.Double)])
-                camadaSolucao.updateFields()
-
-                for patio in patios.getFeatures():
-                    for idPatio in solPatios.patios:
-                        if idPatio == patio.attribute("Id"):
-                            f = QgsFeature()
-                            f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(patio.attribute("POINT_X"), patio.attribute("POINT_Y"))))
-                            #f.setGeometry(QgsGeometry.fromWkt('Point(' + str(patioFeature.attribute("POINT_X")) + ' ' +  str(patioFeature.attribute("POINT_Y")) + ')'))
-                            f.setAttributes([patio.attribute("Id"), patio.attribute("POINT_X"), patio.attribute("POINT_Y"), patio.attribute("ALTITUDE")])
-                            so.addFeature(f)
-
-                camadaSolucao.updateExtents()
-                QgsProject.instance().addMapLayer(camadaSolucao)
-"""
-
+def getAccesPoints(dialog) -> AccessRoad:
+        acessPoints = AccessRoad()
+        for i in range(dialog.accesPointsTable.rowCount()):
+            acessPoints.inicio.append(int(dialog.accesPointsTable.item(i, 0).text()) - 1)
+        return acessPoints

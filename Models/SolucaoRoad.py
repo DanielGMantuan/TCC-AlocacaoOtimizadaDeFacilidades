@@ -34,13 +34,7 @@ class SolucaoRoad:
             result += str(vertice) +','
         result += "\n"
 
-        print(result)
-        #print("pesos")
-        #print(self.peso)
-        #print("antecessor:")
-        #print(self.antecessor)
-        #print("sucessor:")
-        #print(self.sucessor)
+        return result
 
 class SolucaoPrimaryRoad:
     def __init__(self, NUM_PRIMARY_ROAD, NUM_VERTICES):
@@ -66,12 +60,14 @@ class SolucaoRoads:
         self.FOTotal = 0.0
         
     def __str__(self):
+        result= ""
         for road in self.roads:
-            print("roads", end=" ")
-            print(self.typeRoad[self.roads.index(road)])
-            road.__str__()
-        print("typeroads")
-        print(self.typeRoad)
-        print("tempo total\n" + str(self.tempoTotal))
-        print("distancia total\n" + str(self.distanciaTotal))
-        print("FOTotal\n" + str(self.FOTotal))
+            result += "roads "
+            result += str(self.typeRoad[self.roads.index(road)])
+            result += "\n" + road.__str__()
+        result += f"typeroads {self.typeRoad} \n"
+        result += "tempo total\n" + str(self.tempoTotal) + "\n"
+        result += "distancia total\n" + str(self.distanciaTotal) + "\n"
+        result += "FOTotal\n" + str(self.FOTotal) + "\n"
+        
+        return result

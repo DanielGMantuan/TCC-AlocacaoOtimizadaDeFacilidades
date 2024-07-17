@@ -74,7 +74,6 @@ def geraFilePontos(solPatios, patios, i):
 
     # Define o renderizador para a camada
     camadaSolucao.setRenderer(renderer)
-    print(solPatios.patios)
 
     # Adiciona as features à camada
     for patio in patios.getFeatures():
@@ -289,21 +288,6 @@ def drawTrilha1(colectionPointList, i):
     vpr.addFeature(f)
     vl.updateExtents() 
     QgsProject.instance().addMapLayer(vl)
-
-# def geraTrilhas(sol: Solucao, vetVertices):
-#         pointList = []
-#         i=0
-#         for solucao in solucoesTrilha:
-#             for road in solucao.roads:
-#                 rota = geraVetorDePontos(road.verticesRoad, vetVertices)
-#                 pointList.append(rota)
-#                 i= i+1
-#                 # Draw.drawTrilha1(rota,i)
-#             i= i+10
-#         #print("point list:#########################")
-#         #print(pointList)
-#         drawTrilha(pointList)
-
 
 def geraTrilhas(sol: list[SolucaoTrails], area):
     roads = []

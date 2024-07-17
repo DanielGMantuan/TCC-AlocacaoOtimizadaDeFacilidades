@@ -10,13 +10,16 @@ class SolucaoTrails:
         self.FOTotal = 0.0
     
     def __str__(self):
-        print("---- Solucao Trails ----")
-        print("Patio: " + str(self.patio))
-        print("DistanciaTotal: " + str(self.distanciaTotal))
-        print("FOTotal: " + str(self.FOTotal))
-        print("Roads: ")
+        
+        result = "---- Solucao Trails ----" + "\n"
+        result += "Patio: " + str(self.patio) + "\n"
+        result += "DistanciaTotal: " + str(self.distanciaTotal) + "\n"
+        result += "FOTotal: " + str(self.FOTotal) + "\n"
+        result += "Roads: " + "\n"
         for road in self.roads:
-            road.__str__()
+            result += road.__str__() + "\n"
+        
+        return result
 
 
 class SolucaoPtTrails:
@@ -34,15 +37,15 @@ class SolucaoPtTrails:
         self.viavel = 0
     
     def __str__(self): 
-        print("---- Solucao PtTrails ----")
-        print("patios: ")
-        print(self.patios)
-        print("Volumes: ")
-        print(self.volumes)
-        print("FO: " + str(self.FO))
-        print("Distancia total: " +str(self.distanciaTotal))
-        print("NumIteracoes: " + str(self.numIteracoes))
-        print("NumViaveis: " + str(self.numViaveis))
-        print("NumInviaveis: " + str(self.numInviaveis))
-        print("Viavel: " + str(self.viavel))
-        print("-------------------------- \n")
+        result = "---- Solucao PtTrails ----" + "\n"
+        result += "patios: " + "\n"
+        result += str(self.patios) + "\n"
+        result += "Volumes: " + "\n"
+        result += str(self.volumes) + "\n"
+        result += "FO: " + str(self.FO) + "\n"
+        result += "Distancia total: " +str(self.distanciaTotal) + "\n"
+        result += "NumIteracoes: " + str(self.numIteracoes) + "\n"
+        result += "NumViaveis: " + str(self.numViaveis) + "\n"
+        result += "NumInviaveis: " + str(self.numInviaveis) + "\n"
+        result += "Viavel: " + str(self.viavel) + "\n"
+        result += "-------------------------- \n" + "\n"

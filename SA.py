@@ -80,7 +80,6 @@ class SA:
                 vizinho = self.gerarVizinhoPatio(floresta, distancias, solucaoInicial, patios, restVolSup)
                 # obtendo a variação da solução inicial para o vizinho
                 variacao = vizinho.FO - solucaoInicial.FO
-                # print("Melhor:"+ str(melhorSol.FO) +" vizinho.FO:" + str(vizinho.FO) + " solucaoInicial.FO:" + str(solucaoInicial.FO) + " variacao:" + str(variacao))
                 if vizinho.viavel == True:
                     contViaveis = contViaveis + 1
                 else:
@@ -90,7 +89,6 @@ class SA:
 
                 # se a variação é menor q zero, então melhorou
                 if variacao < 0:
-                    # print("melhor.FO:" + str(melhorSol.FO))
                     # melhorou a solução inicial em relação ao vizinho
                     solucaoInicial = vizinho
                     for i in range(self.NUM_PATIOS):
@@ -109,12 +107,10 @@ class SA:
                         # atualizando matriz da solução atual
                         # pega o vizinho mesmo este não sendo melhor
                         solucaoInicial = vizinho
-                        # print("pegando mesmo estando ruim")
                         for i in range(self.NUM_PATIOS):
                             patio = vizinho.patios[i]
                             patios[patio - 1] = 1
                     else:
-                        # print("corrigindo")
                         # corrige solução atual
                         for j in range(self.NUM_PATIOS):
                             patio = solucaoInicial.patios[j]

@@ -27,6 +27,10 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import QtCore
+from PyQt5.QtWidgets import QPushButton
+from .Models.SolucaoRoad import AccessRoad
+
+from qgis.core import QgsProject
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -46,17 +50,71 @@ class interface(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.setWindowTitle("Alocacao otimizada")
         self.menu_btn.clicked.connect(self.sliceLeftContainer)
-        self.btn_shapeFiles.clicked.connect(lambda: self.pages.setCurrentWidget(self.shapeFilesPage))
-        self.btn_patios.clicked.connect(lambda: self.pages.setCurrentWidget(self.patiosPage))
-        self.btn_estradas.clicked.connect(lambda: self.pages.setCurrentWidget(self.estradasPage))
+        self.btn_shapeFiles.clicked.connect(lambda: self.changePage(self.shapeFilesPage, self.btn_shapeFiles))
+        self.btn_patios.clicked.connect(lambda: self.changePage(self.patiosPage, self.btn_patios))
+        self.btn_estradas.clicked.connect(lambda: self.changePage(self.estradasPage, self.btn_estradas))
+        self.buttonAddAccesPoints.clicked.connect(lambda: self.addAccesPointsInTable(self.accesIdInput))
+        self.cmb_vertices.currentIndexChanged.connect(lambda: self.cleanTable())
+
+        self.lineEditTaxaResfriamento.editingFinished.connect(lambda: self.validateInput(self.lineEditTaxaResfriamento, 'Taxa de resfriamento'))
+        self.lineEditIteracoesVizinhanca.editingFinished.connect(lambda: self.validateInput(self.lineEditIteracoesVizinhanca, 'Iterações de vizinhanca'))
+        self.lineEditTemperaturaCongelamento.editingFinished.connect(lambda: self.validateInput(self.lineEditTemperaturaCongelamento, 'Temperatura de congelamento'))
+        self.lineEditTemperaturaInicial.editingFinished.connect(lambda: self.validateInput(self.lineEditTemperaturaInicial, 'Temperatura inicial'))
+        # self.accesIdInput.editingFinished.connect(lambda: self.validateAccesInput(self.accesIdInput, 'Adicionar id'))
+        
+        #Valores de Heuristica
+        self.lineEditDistArvorePatio.setText("379")
+        self.lineEditNumeroPatios.setText("14")
+        self.lineEditNUM_ITERACOES.setText("20000")
+        self.lineEditFlexSup.setText("10")
+
+        #Valores do AS
+        self.lineEditTaxaResfriamento.setText("0.985")
+        self.lineEditIteracoesVizinhanca.setText("500")
+        self.lineEditTemperaturaCongelamento.setText("1000")
+        self.lineEditTemperaturaInicial.setText("0.001")
+
+        self.SA.toggled.connect(lambda: self.checkBoxChanged())
+
+        self.changePage(self.shapeFilesPage, self.btn_shapeFiles)
+
+    def changePage(self, page, button):
+        self.pages.setCurrentWidget(page)
+        self.updateButtonStyles(button)
+
+    def updateButtonStyles(self, activeButton):
+        default_style = """
+        QPushButton {
+            background-color: none;
+            color: black;
+        }
+        """
+
+        active_style = """
+        QPushButton {
+            background-color: grey;
+            color: white;
+        }
+        """
+
+        buttons = [self.btn_shapeFiles, self.btn_patios, self.btn_estradas]
+        for button in buttons:
+            if button == activeButton:
+                button.setStyleSheet(active_style)
+            else:
+                button.setStyleSheet(default_style)
 
     def sliceLeftContainer(self):
         width = self.leftContainer.width()
 
-        if width == 9:
+        if width == 0:
             newWidth = 200
+            self.line.setFixedWidth(1)
+            self.mainContainer.setContentsMargins(10,0,0,0)
         else:
-            newWidth = 9
+            newWidth = 0
+            self.mainContainer.setContentsMargins(0,0,0,0)
+            self.line.setFixedWidth(0)
         
         self.animation = QtCore.QPropertyAnimation(self.leftContainer, b"maximumWidth")
         self.animation.setDuration(500)
@@ -64,3 +122,84 @@ class interface(QtWidgets.QDialog, FORM_CLASS):
         self.animation.setEndValue(newWidth)
         self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
         self.animation.start()
+
+    def validateInput(self, input, inputName):
+        try:
+            value = float(input.text())
+            input.setStyleSheet("")
+        except ValueError:
+            input.setStyleSheet("border: 1px solid red;")
+            QtWidgets.QMessageBox.critical(self, "Erro", f"Por favor, insira um número válido para {inputName}.")
+
+    def validateAccesInput(self, input, inputName):
+        try:
+            value = int(input.text())
+            input.setStyleSheet("")
+            return value
+        except ValueError:
+            input.setStyleSheet("border: 1px solid red;")
+            raise ValueError(f"Por favor, insira um número válido para {inputName}.")
+
+    def clearValidation(self, input):
+        # Limpar o estilo de validação quando o usuário começa a digitar
+        input.setStyleSheet("")
+    
+    def checkBoxChanged(self):
+        if not self.SA.isChecked():
+            self.clearValidation(self.lineEditTaxaResfriamento)
+            self.clearValidation(self.lineEditIteracoesVizinhanca)
+            self.clearValidation(self.lineEditTemperaturaCongelamento)
+            self.clearValidation(self.lineEditTemperaturaInicial)
+    
+    def addAccesPointsInTable(self, input):
+        try :
+            verticesLayerIndex = self.cmb_vertices.currentIndex() - 1
+            if(verticesLayerIndex == -1):
+                raise IndexError(f"Defina o layer antes de adicionar os acessos.")
+
+            vertex_id = self.validateAccesInput(input, "Adicionar id")
+                
+            layers = QgsProject.instance().layerTreeRoot().children()
+            layer = layers[verticesLayerIndex].layer()
+
+            for i in range(self.accesPointsTable.rowCount()):
+                if str(vertex_id) == self.accesPointsTable.item(i, 0).text():
+                    raise IndexError(f"Vértice com ID {vertex_id} já adicionado.")
+
+            for verticeLayer in layer.getFeatures():
+                if verticeLayer.attribute("id") == vertex_id:
+                    # Obter os atributos do vértice
+                    vertex_id = verticeLayer.attribute("id")  # Ajustar para o seu sistema de IDs
+                    y_coord = verticeLayer.attribute("y")
+                    x_coord = verticeLayer.attribute("x")
+                    z_coord = verticeLayer.attribute("z")
+
+                    # Inserir os dados na tabela
+                    row_position = self.accesPointsTable.rowCount()
+                    self.accesPointsTable.insertRow(row_position)
+                    self.accesPointsTable.setItem(row_position, 0, QtWidgets.QTableWidgetItem(str(vertex_id)))
+                    self.accesPointsTable.setItem(row_position, 1, QtWidgets.QTableWidgetItem(str(x_coord)))
+                    self.accesPointsTable.setItem(row_position, 2, QtWidgets.QTableWidgetItem(str(y_coord)))
+                    self.accesPointsTable.setItem(row_position, 3, QtWidgets.QTableWidgetItem(str(z_coord)))
+
+                    # Inserindo o botao de delete
+                    btn_delete = QPushButton("Excluir")
+                    self.accesPointsTable.setCellWidget(row_position, 4, btn_delete)
+                    btn_delete.clicked.connect(lambda: self.removeRow(btn_delete))
+
+                    return
+                
+            raise IndexError(f"Vértice com ID {vertex_id} não encontrado.")
+                
+        except IndexError as e:
+            QtWidgets.QMessageBox.warning(self, "Warning", e.__str__())
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", "Nao e possivel pegar os pontos desse layer, por favor confira se os atributos sao id, x, y e z.")
+    
+    def removeRow(self, btn_delete):
+        row = self.accesPointsTable.indexAt(btn_delete.pos()).row()
+        self.accesPointsTable.removeRow(row)
+
+    def cleanTable(self):
+        self.accesPointsTable.setRowCount(0)
+    

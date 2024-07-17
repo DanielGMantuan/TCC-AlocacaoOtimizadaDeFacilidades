@@ -1,3 +1,4 @@
+from typing import Optional
 from .SolucaoRoad import SolucaoRoad 
 from ..Services.commons import calculaDistancia,calculaDistanciaPenalizada, calculaDistancia2D, calculaDistanciaDesviosPenalizada
 from .Area import Area
@@ -8,17 +9,19 @@ NUM_DIS_MAX_VIZINHO = int(43)
 
 class Grafo:
     def __str__(self):
-        print("----GRAFO----")
-        print("numero de vertices:" + str(self.nro_vertices))
-        print("Ponderado:" + str(self.eh_ponderado))
-        print("grau de cada vertice:")
-        print(self.grau)
-        print("distancia em cada vertice:")
-        print(self.distancia)
-        print("arestas:")
-        print(self.arestas)
-        print("matriz de pesos:")
-        print(self.pesos)
+        string = "----GRAFO---- \n"
+        string += "numero de vertices:" + str(self.nro_vertices) + "\n"
+        string += "Ponderado:" + str(self.eh_ponderado) + "\n"
+        string += "grau de cada vertice:" + "\n"
+        string += str(self.grau) + "\n"
+        string += "distancia em cada vertice:" + "\n"
+        string += str(self.distancia) + "\n"
+        string += "arestas:" + "\n"
+        string += str(self.arestas) + "\n"
+        string += "matriz de pesos:" + "\n"
+        string += str(self.pesos) + "\n"
+
+        return string
 
     def cria_Grafo(self, NUM_VERTICES, grau_max, eh_ponderado):
         self.nro_vertices = NUM_VERTICES
@@ -64,7 +67,7 @@ class Grafo:
             self.pesos[orig][self.grau[orig]] = peso
         self.grau[orig] = self.grau[orig] + 1
     
-    def insereArestasPatios(self, area : list[Area], vertPatios: list[int], qtdPatios: int, desvios: list[Desvio]):
+    def insereArestasPatios(self, area : list[Area], vertPatios: list[int], qtdPatios: int, desvios: Optional[list[Desvio]]):
         for i in range(qtdPatios):
             pOrigem = area[vertPatios[i] - 1]
 
@@ -80,7 +83,7 @@ class Grafo:
                     #insere aresta
                     self.insereAresta(i, j, distancia3d, distanciaPenalizada)
 
-    def insereArestaArea(self, area: list[Area], desvios: list[Desvio], vetInundacao: list[int], vetApp: list[int], vetInclinacao: list[Inclinacao]):
+    def insereArestaArea(self, area: list[Area], desvios: Optional[list[Desvio]], vetInundacao: Optional[list[int]], vetApp: Optional[list[int]], vetInclinacao: list[Inclinacao]):
         matrizVertices = self.geraMatriz(area)
 
         MAX_LINE_SIZE = len(matrizVertices)
@@ -221,7 +224,5 @@ class Grafo:
         sol.FO = sol.peso[sol.estrada.termino]
         sol.distanciaTotal = sol.distancia[sol.estrada.termino]
         #TODO: questao do tempo e do tempo da SO
-        #sol.__str__()
-        # print("<<<GRAFO>>>")
         return sol
     

@@ -90,11 +90,6 @@ class RoadsAprovTrecho:
             vDistPat = distanciasPatios[idxPatio][iPatio]
             if patioCon != -1:
                 distEst = calculaDistancia(area[vertEst], patios[patioCon - 1])
-                print('patioCon -> ' + str(patioCon))
-                print('vDistPat -> ' + str(vDistPat))
-                print("vertEst -> " + str(vertEst))
-                print('distEst -> ' + str(distEst))
-                print('distPatioEst -> ' + str(distPatioEst))
                 if distEst < distPatioEst:
                     distancia[0] = vDistPat
                     return patioCon
@@ -121,18 +116,6 @@ class RoadsAprovTrecho:
         preRods = PreProcecamentoRoads(NUM_PATIOS, patios, solPatios)
         distanciaPatios = preRods.distanciaPatios
         patiosOrder = preRods.patiosOrder
-        
-        
-        # print("---------- DISTANCIA PATIOS ------------")
-        # for i in distanciaPatios:
-        #    print(i)
-        #    print("\n")
-        # print("--------------------------------")
-        # print("---------- PATIOS ORDER ------------")
-        # for i in patiosOrder:
-        #     print(i)
-        #     print("\n")
-        # print("--------------------------------")
 
         #ligando os patios com as estradas de acesso
         for i in range(NUM_ACCESS_ROAD):
@@ -152,7 +135,6 @@ class RoadsAprovTrecho:
                     menor = vDistPat[0]
             
             #Realiza a ligacao ate a estrada primaria
-            # print(patios[patioAtual - 1].__str__())
             solRoad = grafo.Dijkstra(pMenor, vEstradaPri)
             typeRoad = 1
             vetSelRoads[patioCon] = 1
@@ -183,37 +165,21 @@ class RoadsAprovTrecho:
 
                 #verifica se o patio esta em algum vertice da estrada principal
                 if vDistEstPri[0] != 0 and vDistEstSec != 0:
-                    # print("\n")
-                    # print(patiosOrder[i])
                     patioCon = self.obterPatioProximo(area, patios, vEstradaPri, vDistEstPri[0], i, distanciaPatios, patiosOrder, vDistPat)
-                    # print('id - patio atual')
-                    # print(patios[patioAtual - 1].vertice - 1)
-                    # print('id - patio proximo')
-                    # if patioCon == -1:
-                    #     print("PATIOCON == -1")
-                    # else:
-                    #     print(patios[patioCon - 1].vertice - 1)
-                    # print('v_DistPatio: ' + str(vDistPat[0]))
-                    # print('id - EstradaSec: ' + str(vEstradaSec))
-                    # print('v_DistEstSec: ' + str(vDistEstSec))
-                    # print('v_DistEstPri: ' + str(vDistEstPri[0]))
                     
                     if patioCon != -1:
                         if vDistEstPri[0] <= vDistEstSec and vDistEstPri[0] <= vDistPat[0]:
                             #realiza a ligacao ate a estrada primaria
-                            # print('realiza a ligacao ate a estrada primaria')
                             solRoad = grafo.Dijkstra(vPatioAtual, vEstradaPri)
                             typeRoad = 1
                             vetSelRoads[i] = 1 
                         elif vDistEstSec <= vDistEstPri[0] and vDistEstSec <= vDistPat[0]:
                             #realiza a ligacao ate a estrada secundaria
-                            # print('realiza a ligacao ate a estrada secundaria')
                             solRoad = grafo.Dijkstra(vPatioAtual, vEstradaSec)
                             typeRoad = 2
                             vetSelRoads[i] = 1
                         else:
                             #realiza a ligacao ate outro patio
-                            # print('realiza a ligacao ate outro patio')
                             solRoad = grafo.Dijkstra(vPatioAtual, patios[patioCon - 1].vertice - 1)
                             typeRoad = 2
                             #cria uma ligacao inversa proibida are os dois patios
@@ -229,13 +195,11 @@ class RoadsAprovTrecho:
                     else:
                         if vDistEstPri[0] <= vDistEstSec:
                             #realiza a ligacao ate a estrada primaria
-                            # print('else -> realiza a ligacao ate a estrada primaria')
                             solRoad = grafo.Dijkstra(vPatioAtual, vEstradaPri)
                             typeRoad = 1
                             vetSelRoads[i] = 1
                         else:
                             #realiza a ligacao ate a estrada secundaria
-                            # print('else -> realiza a ligacao ate a estrada secundaria')
 
                             solRoad = grafo.Dijkstra(vPatioAtual, vEstradaSec)
                             typeRoad = 2
@@ -268,8 +232,6 @@ class RoadsAprovTrecho:
             for i in range(NUM_PATIOS):
                 patioAtual = solPatios.patios[i]
                 vPatioAtual = patios[patioAtual - 1].vertice - 1
-                # print(vPatioAtual)
-                # print(estradasAcesso.termino)
                 vDistPat[0] = calculaDistancia(area[vPatioAtual], area[estradasAcesso.termino])
                 if vDistPat[0] < menor:
                     pMenor = vPatioAtual

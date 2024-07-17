@@ -1,6 +1,6 @@
 import random
 from math import inf
-from typing import List
+from typing import List, Optional
 from .Services.commons import buscaAPP, calculaDistancia, calculaDistancia2D
 from .Models.SolucaoTrails import SolucaoTrails, SolucaoPtTrails
 from .Models.Grafo import Grafo
@@ -237,7 +237,7 @@ def atualizaVerticesTrilhas(grPatio: Grafo, solPtTrilhas, solTrilha, vInicioTril
         if vAtual == -1:
             break
 
-def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: List[Desvio], patioAtual: int, qtdTrilhas: int, solPtTrilhas: SolucaoPtTrails, arestasPatios: List[int], NUM_VERTICES: int):
+def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[Desvio]], patioAtual: int, qtdTrilhas: int, solPtTrilhas: SolucaoPtTrails, arestasPatios: List[int], NUM_VERTICES: int):
     solTrilha = SolucaoRoad(NUM_VERTICES)
     #tInicio = get_time()
     sol = cria_SolTrails(qtdTrilhas, NUM_VERTICES)
@@ -297,7 +297,7 @@ def cria_SolTrails(nro_trails, NUM_VERTICES) -> SolucaoTrails:
 
 class ExecutarTrilhas:
     
-    def trails(self, area: List[Area], solRoads: SolucaoRoads, patios: List[Patio], solPatios: SolucaoStorageYard, floresta: List[ArvoreExploravel], arvoreSelPatios: List[List[int]], distancias: List[List[float]], app: List[int], qtdArvores: List[int], restVolSup: float, desvios: List[Desvio], NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA): 
+    def trails(self, area: List[Area], solRoads: SolucaoRoads, patios: List[Patio], solPatios: SolucaoStorageYard, floresta: List[ArvoreExploravel], arvoreSelPatios: List[List[int]], distancias: List[List[float]], app: Optional[List[int]], qtdArvores: List[int], restVolSup: float, desvios: Optional[List[Desvio]], NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA): 
         #tInicial = get_time()
         tempoYardTotal = 0.0
         distanciaYardMedia = 0.0
@@ -314,10 +314,11 @@ class ExecutarTrilhas:
         #zerando
         verticesProibidos = [0 for _ in range(NUM_VERTICES)]
 
-        #marcando os vertices de APPs como proibidos
-        for i in range(NUM_VERTICES):
-            if buscaAPP(app, i):
-                verticesProibidos[i] = 1
+        if(app != None):
+            #marcando os vertices de APPs como proibidos
+            for i in range(NUM_VERTICES):
+                if buscaAPP(app, i):
+                    verticesProibidos[i] = 1
         
         #marcando os vertices ja utilizados em estradas como proibidos
         for i in range(NUM_ROADS):
@@ -333,8 +334,6 @@ class ExecutarTrilhas:
             patioAtual = solPatios.patios[i]
 
             qtdTrilhas = int((qtdArvores[i] / NUM_ARV_TRILHA)) if ((qtdArvores[i] / NUM_ARV_TRILHA) >= 1 ) else 1
-            print("+=========================================================+")
-            print("qtdArvores: "+ str(qtdArvores[i]) + " qtdTrilhas: " + str(qtdTrilhas) + " patio: " + str(patioAtual) + " vertice: " + str(patios[patioAtual - 1].vertice - 1))
             #definindo o vetor subPatios
             vSubArvPatios = [ArvoreExploravel() for _ in range(qtdArvores[i])]
             vSubDistPatios = [0.0 for _ in range(qtdArvores[i])]
@@ -363,25 +362,16 @@ class ExecutarTrilhas:
             if(qtdRealVertPatio == 0):
                 print("\n\n\npatioAtual: " + str(patioAtual) + " \nqtdRealVertPatio = 0\n\n\n")
             else:
-                print("quantidade Real vert Patio: " + str(qtdRealVertPatio))
-                print("quantidade trilhas: " + str(qtdTrilhas))
 
                 vertRealPatios = [0 for _ in range(qtdRealVertPatio)]
                 for j in range(qtdRealVertPatio):
                     vertRealPatios[j] = vertPatios[j] #vertRealPatios recebe id de cada vertice proximo do patio
-                
-                print("Vert real patios")
-                print(vertRealPatios)
 
                 #obtendo os pontos para as trilhas
-                print("__Heuristica construtiva iterativa__")
                 solPtTrilhas = heuConstIterTrilha(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, NUM_ITERACOES, restVolSup)
                 solPtTrilhas.__str__()
 
-                # TODO: ver isso mais tarde quando estiver funcionando certinho
-                print("\n__ SA Trails __")
                 solPtTrilhas = SATrails(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, solPtTrilhas, restVolSup)
-                solPtTrilhas.__str__()
                 
                 tempoYardTotal = tempoYardTotal + solPtTrilhas.tempoSol
                 FOYardTotal = FOYardTotal + solPtTrilhas.FO
@@ -390,12 +380,8 @@ class ExecutarTrilhas:
                 qtdRealVertPatio = qtdRealVertPatio + 1
                 vertArestaPatios = [0 for _ in range(qtdRealVertPatio)]
                 vertArestaPatios[0] = patios[patioAtual - 1].vertice
-                print("verArestaPatio antes :")
-                print(vertArestaPatios)
                 for j in range(1, qtdRealVertPatio):
                     vertArestaPatios[j] = vertRealPatios[j - 1]
-                print("verArestaPatio depois:")
-                print(vertArestaPatios)
                 
                 #criando o grafo do patio para neste grafo definir as trilhas
                 grPatio.cria_Grafo(qtdRealVertPatio, GRAU_MAX, PONDERADO)
@@ -411,9 +397,6 @@ class ExecutarTrilhas:
                     for vertice in road.verticesRoad:
                         aux.append(vertArestaPatios[vertice]-1)
                     road.verticesRoad = copy.copy(aux)
-                print("__Depois de transformar__")
-                sol.__str__()
-                print("\n\n") 
                 
                 solucaoTrilha.append(sol)
             
