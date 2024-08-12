@@ -315,6 +315,7 @@ class ExecutarTrilhas:
         verticesProibidos = [0 for _ in range(NUM_VERTICES)]
 
         if(app != None):
+            print("App existe")
             #marcando os vertices de APPs como proibidos
             for i in range(NUM_VERTICES):
                 if buscaAPP(app, i):

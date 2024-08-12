@@ -283,25 +283,30 @@ class alocacao_otimizada:
         useSimulatedAnnealing = dlg.SA.isChecked()
 
         if(useSimulatedAnnealing):
+            print("Using SA")
             SAExceptions = []
 
             try:
                 TAXARESFRIAMENTO_YARD = float(dlg.lineEditTaxaResfriamento.text())
+                print(TAXARESFRIAMENTO_YARD)
             except:
                 SAExceptions.append("Taxa de resfriamento E invalida")
             
             try:
                 ITERACOESVIZINHANCA_YARD = float(dlg.lineEditIteracoesVizinhanca.text())
+                print(ITERACOESVIZINHANCA_YARD)
             except:
                 SAExceptions.append("Iteracoes de vizinhanca E invalida")    
             
             try:
                 TEMPERATURAINICIAL_YARD = float(dlg.lineEditTemperaturaInicial.text())
+                print(TEMPERATURAINICIAL_YARD)
             except:
                 SAExceptions.append("Temperatura inicial E invalida")
 
             try:
                 TEMPERATURACONGELAMENTO_YARD = float(dlg.lineEditTemperaturaCongelamento.text())
+                print(TEMPERATURACONGELAMENTO_YARD)
             except:                
                 SAExceptions.append("Temperatura de congelamento E invalida")
 
@@ -312,7 +317,7 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 12 * 60 * 60
+        TEMPOEXEC = 10 * 60
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
@@ -400,6 +405,7 @@ class alocacao_otimizada:
             solPatios = heuristica.heuConstrutivaIter(arvoresExploraveis, distanciasPatArv, NUM_ITERACOES, restVolSup)
 
             if useSimulatedAnnealing == True:
+                print("Simulated Annealing")
                 sa = SA(NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, TEMPOEXEC)
                 solPatios = sa.SAStorageYard(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup, TAXARESFRIAMENTO_YARD, ITERACOESVIZINHANCA_YARD, TEMPERATURAINICIAL_YARD, TEMPERATURACONGELAMENTO_YARD)
 
@@ -418,15 +424,11 @@ class alocacao_otimizada:
             trilha = ExecutarTrilhas()
             solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-            # solPatios.fileWritter(i, restVolSup)
+            solPatios.fileWritter(i, restVolSup)
 
             geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
             geraPontosPatiosMarcelo(solPatios, camadaPatio, i)
             geraTrilhas(solTrilha, area)
-            #TODO: esta com problema aqui
-            # geraTrilhas(solucaoTrilha, area)
-            # for j in range(len(solPatios.arvores)):
-            #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], i)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 

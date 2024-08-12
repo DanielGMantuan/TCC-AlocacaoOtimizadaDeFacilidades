@@ -71,8 +71,8 @@ class interface(QtWidgets.QDialog, FORM_CLASS):
         #Valores do AS
         self.lineEditTaxaResfriamento.setText("0.985")
         self.lineEditIteracoesVizinhanca.setText("500")
-        self.lineEditTemperaturaCongelamento.setText("1000")
-        self.lineEditTemperaturaInicial.setText("0.001")
+        self.lineEditTemperaturaCongelamento.setText("0.001")
+        self.lineEditTemperaturaInicial.setText("1000")
 
         self.SA.toggled.connect(lambda: self.checkBoxChanged())
 

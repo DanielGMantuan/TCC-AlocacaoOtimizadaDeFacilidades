@@ -15,7 +15,7 @@ class SA:
         self.DISTANCIA_MAXIMA = DISTANCIA_MAXIMA
         self.NUM_VERTICES_PATIOS = NUM_VERTICES_PATIOS
         self.PENALIZACAO_VOLUME = PENALIZACAO_VOLUME
-        self.TEMPOEXEC = TEMPOEXEC
+        self.TEMPOEXEC = TEMPOEXEC #hardcoded
 
     def gerarVizinhoPatio(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], sol: SolucaoStorageYard, patios: list[int], restVolSup: float):
         solAtual = copy.deepcopy(sol)
