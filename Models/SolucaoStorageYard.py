@@ -11,8 +11,8 @@ class SolucaoStorageYard:
     viavel = True
     arvores = [[] for _ in range(14)]    
 
-    def fileWritter(self, index: int, restVolSup:float):
-        caminho =r"C:\Users\NOTE155\Desktop\Iniciacao Cientifica\Resultados\resultado"+str(index)+".txt"
+    def fileWritter(self, index: int, restVolSup:float, path: str):
+        caminho = fr"{path}\patios.txt"
         with open(caminho, "w") as arquivo:
             arquivo.write("distanciaTotal: " + str(self.distanciaTotal) + "\n")
             arquivo.write("FO: " + str(self.FO) + "\n")
@@ -22,14 +22,14 @@ class SolucaoStorageYard:
             arquivo.write("numViaveis: " + str(self.numViaveis) + "\n")
             arquivo.write("numInviaveis: " + str(self.numInviaveis) + "\n")
             arquivo.write("viavel: " + str(self.viavel) + "\n")
-            arquivo.write("+--------------------------------+\n")
-            arquivo.write("Volumes:" + "\n")
+            arquivo.write("+----------------RESULTADO----------------+\n")
             volumeTotal = 0
+            arquivo.write("Patio\t N_Arvores\t Volume" + "\n")
             for i in range(len(self.patios)):
                 if(self.volumes[i] >= restVolSup):
-                    arquivo.write("patio: " + str(self.patios[i]) + " volume: " + str(self.volumes[i]) + " PENALIZADO \n") 
+                    arquivo.write(str(self.patios[i]) + "\t " + str(len(self.arvores[i])) + "\t " + str(self.volumes[i]) + "\t PENALIZADO \n") 
                 else:
-                    arquivo.write("patio: " + str(self.patios[i]) + " volume: " + str(self.volumes[i]) + "\n")
+                    arquivo.write(str(self.patios[i]) + "\t " + str(len(self.arvores[i])) + "\t " + str(self.volumes[i]) + "\n")
                 volumeTotal += self.volumes[i]
             arquivo.write("Volume Total:" + str(volumeTotal) + "\n")
             arquivo.write("RestVolSup:" + str(restVolSup) + "\n")
@@ -38,3 +38,4 @@ class SolucaoStorageYard:
                 arquivo.write("Patio\tId_arvore\tNum_Arvores\n")
                 for j in range(len(self.arvores[i])):
                     arquivo.write(str(self.patios[i]) +"\t"+ str(self.arvores[i][j]['id']) + "\t" + str(self.arvores[i][j]['numero']) + "\n")
+    

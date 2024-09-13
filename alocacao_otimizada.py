@@ -33,17 +33,17 @@ from .resources import *
 from .alocacao_otimizada_dialog import alocacaoOtimizadaDialog
 from .road_screen2_dialog import interface
 import os.path
+import shutil
 
 import math # sqrt, pow
 from random import seed, randint # seed, randomint
-from datetime import datetime # datetime
 import sys # maxint
 import time # time
 
 from .Services.PreProcLayer import PreProcLayer
 from .Heuristicas import Heuristicas
 from .SA import SA
-from .Services.Draw import geraPontosMemoy, geraLinhas, geraTrilhas, geraPontosPatiosMarcelo, geraFilePontos
+from .Services.Draw import geraPontosMemoy, geraLinhas, geraTrilhas, geraPontosPatiosMarcelo, geraFilePontos, geraPontosArvores
 from .Models.Grafo import Grafo
 from .roadsAprovTrecho import RoadsAprovTrecho
 from .Models.SolucaoRoad import AccessRoad
@@ -255,6 +255,7 @@ class alocacao_otimizada:
         else:
             dicionario["arvoresRemanescente"] = False
 
+        path = dlg.resultPath.text()
         # ----------------Heurística-----------------
 
         DISTANCIA_MAXIMA = float(dlg.lineEditDistArvorePatio.text())
@@ -283,30 +284,25 @@ class alocacao_otimizada:
         useSimulatedAnnealing = dlg.SA.isChecked()
 
         if(useSimulatedAnnealing):
-            print("Using SA")
             SAExceptions = []
 
             try:
                 TAXARESFRIAMENTO_YARD = float(dlg.lineEditTaxaResfriamento.text())
-                print(TAXARESFRIAMENTO_YARD)
             except:
                 SAExceptions.append("Taxa de resfriamento E invalida")
             
             try:
                 ITERACOESVIZINHANCA_YARD = float(dlg.lineEditIteracoesVizinhanca.text())
-                print(ITERACOESVIZINHANCA_YARD)
             except:
                 SAExceptions.append("Iteracoes de vizinhanca E invalida")    
             
             try:
                 TEMPERATURAINICIAL_YARD = float(dlg.lineEditTemperaturaInicial.text())
-                print(TEMPERATURAINICIAL_YARD)
             except:
                 SAExceptions.append("Temperatura inicial E invalida")
 
             try:
                 TEMPERATURACONGELAMENTO_YARD = float(dlg.lineEditTemperaturaCongelamento.text())
-                print(TEMPERATURACONGELAMENTO_YARD)
             except:                
                 SAExceptions.append("Temperatura de congelamento E invalida")
 
@@ -317,7 +313,7 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 10 * 60
+        TEMPOEXEC = 7 * 60 * 60 # 7 horas
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
@@ -336,9 +332,9 @@ class alocacao_otimizada:
             desvios = None
 
         if(dicionario["inundacao"]):
-            inuncao = preProcLayer.lerInstanciaInundacao(camadaInundacao)
+            inundacao = preProcLayer.lerInstanciaInundacao(camadaInundacao)
         else:
-            inuncao = None
+            inundacao = None
         
         if(dicionario["app"]):
             app = preProcLayer.lerInstanciaAPP(camadaApp)
@@ -356,10 +352,13 @@ class alocacao_otimizada:
 
         heuristica = Heuristicas(NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME)
 
+        ### ---- TESTANDO ENTRADA FIXA ---- ###
+
         # newSolucao: SolucaoStorageYard = SolucaoStorageYard()
-        # newSolucao.patios = [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]
+        # newSolucao.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176] 
+        # # # # [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]
         # # # # [537, 268, 1344, 1065, 1405, 750, 1494, 415, 291, 304, 1373, 950, 720, 173]
-        # # # # [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # # # # [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]    #essa e a solucao do professor?
         # # # # [1525, 1434, 1401, 1086, 1371, 969, 734, 547, 296, 423, 273, 176, 764, 257]
 
         # newSolucao = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, newSolucao, restVolSup)
@@ -368,7 +367,7 @@ class alocacao_otimizada:
 
         # grafo = Grafo()
         # grafo.cria_Grafo(NUM_VERTICES, 8, 1)
-        # grafo.insereArestaArea(area, desvios, inuncao, app, inclinacao)
+        # grafo.insereArestaArea(area, desvios, inundacao, app, inclinacao)
 
         # # -------------- ROADS -------------
         
@@ -384,13 +383,28 @@ class alocacao_otimizada:
         # trilha = ExecutarTrilhas()
         # solTrilha = trilha.trails( area, solRoad, patios, newSolucao, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-        # # newSolucao.fileWritter(0, restVolSup)
-        # # geraPontosMemoy(newSolucao, camadaPatio, 0)
-        # # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 0)
-        # # for j in range(len(newSolucao.arvores)):
-        # #     geraPontosArvores(newSolucao.arvores[j], arvoresExploraveis, newSolucao.patios[j], 0)
+        # # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 1)
         # # geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
         # # geraTrilhas(solTrilha, area)
+        # # newSolucao.fileWritter(1, restVolSup)
+
+        # path = fr"{path}\resultado{str(1)}"
+        # if os.path.exists(path):
+        #     # Deletar o diretório e todo o conteúdo
+        #     shutil.rmtree(path)
+
+        # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 1, path)
+        # geraLinhas(solRoad.roads, area, 1, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+        # geraTrilhas(solTrilha, area, 1, path)
+        # for j in range(len(newSolucao.arvores)):
+        #     geraPontosArvores(newSolucao.arvores[j], arvoresExploraveis, newSolucao.patios[j], 1, path)
+            
+        # newSolucao.fileWritter(1, restVolSup, path)
+        # solRoad.fileWritter(1, path)
+        # for j in range(len(solTrilha)):
+        #     solTrilha[j].fileWritter(1, path)
+
+        ### ---- FIM TESTANDO ENTRADA FIXA ---- ###
 
         for i in range(1):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
@@ -400,6 +414,11 @@ class alocacao_otimizada:
             if(NUM_ACCESS_ROAD == 0):
                 QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
                 return
+            
+            path = fr"{path}\resultado{str(i)}"
+            if os.path.exists(path):
+                # Deletar o diretório e todo o conteúdo
+                shutil.rmtree(path)
 
             solPatios = SolucaoStorageYard()
             solPatios = heuristica.heuConstrutivaIter(arvoresExploraveis, distanciasPatArv, NUM_ITERACOES, restVolSup)
@@ -412,7 +431,7 @@ class alocacao_otimizada:
             #---------------DEFININDO GRAFO-----------------
             grafo = Grafo()
             grafo.cria_Grafo(NUM_VERTICES, 8, 1)
-            grafo.insereArestaArea(area, desvios, inuncao, app, inclinacao)
+            grafo.insereArestaArea(area, desvios, inundacao, app, inclinacao)
 
             # -------------- ROADS -------------
             solRoad_aux = RoadsAprovTrecho()
@@ -424,11 +443,16 @@ class alocacao_otimizada:
             trilha = ExecutarTrilhas()
             solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-            solPatios.fileWritter(i, restVolSup)
+            geraLinhas(solRoad.roads, area, i, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+            geraTrilhas(solTrilha, area, i, path)
+            geraPontosPatiosMarcelo(solPatios, camadaPatio, i, path)
+            for j in range(len(solPatios.arvores)):
+                geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, path)
 
-            geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-            geraPontosPatiosMarcelo(solPatios, camadaPatio, i)
-            geraTrilhas(solTrilha, area)
+            solPatios.fileWritter(i, restVolSup, path)
+            solRoad.fileWritter(i, path)
+            for j in range(len(solTrilha)):
+                solTrilha[j].fileWritter(1, path)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 

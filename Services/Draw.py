@@ -15,6 +15,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 from PyQt5.QtGui import QColor
 
+import shutil
 import os
 import random
 from ..Models.SolucaoTrails import SolucaoTrails
@@ -99,7 +100,7 @@ def geraFilePontos(solPatios, patios, i):
     # Adicionar a camada ao projeto
     QgsProject.instance().addMapLayer(camadaSolucao)
 
-def geraPontosPatiosMarcelo(solPatios, patios, i):
+def geraPontosPatiosMarcelo(solPatios, patios, i, path):
     crs = QgsCoordinateReferenceSystem('EPSG:31981')
 
     # Criar a camada vetorial
@@ -131,13 +132,11 @@ def geraPontosPatiosMarcelo(solPatios, patios, i):
                 f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(patio.attribute("POINT_X")), float(patio.attribute("POINT_Y")))))
                 provider.addFeature(f)
     
-    nome_arquivo = r"C:\Users\NOTE155\Desktop\Iniciacao Cientifica\Resultados\Solucao" + str(i) + r"\patios.shp"
-    diretorio = r"C:\Users\NOTE155\Desktop\Iniciacao Cientifica\Resultados\Solucao" + str(i)
+    nome_arquivo = fr"{path}\patio\patio.shp"
+    diretorio = fr"{path}\patio"
 
     if not os.path.exists(diretorio):
         os.makedirs(diretorio)
-    else:
-        limpar_pasta(diretorio)
 
     options = QgsVectorFileWriter.SaveVectorOptions()
     options.driverName = "ESRI Shapefile"
@@ -145,11 +144,12 @@ def geraPontosPatiosMarcelo(solPatios, patios, i):
     # Salvar a camada vetorial em um arquivo
     QgsVectorFileWriter.writeAsVectorFormatV2(camadaSolucao, nome_arquivo, QgsCoordinateTransformContext(), options)
 
-    # Adicionar a camada ao projeto
-    del camadaSolucao
+    # # Adicionar a camada ao projeto
+    QgsProject.instance().addMapLayer(camadaSolucao)
+    # del camadaSolucao
 
 
-def geraPontosArvores(solArvores: list[dict], arvores: list[ArvoreExploravel], numero, indexSolucao):
+def geraPontosArvores(solArvores: list[dict], arvores: list[ArvoreExploravel], numero, indexSolucao, path: str):
     crs = QgsCoordinateReferenceSystem('EPSG:31981')
     camadaSolucao = QgsVectorLayer("point", "arvores " + str(numero) , "memory")
     camadaSolucao.setCrs(crs)
@@ -178,7 +178,11 @@ def geraPontosArvores(solArvores: list[dict], arvores: list[ArvoreExploravel], n
         so.addFeature(f)
 
 
-    nome_arquivo = r"C:\Users\NOTE155\Desktop\Iniciacao Cientifica\Resultados\Solucao" + str(indexSolucao) + r"\Arvores " + str(numero) + ".shp"
+    nome_arquivo = fr"{path}\arvores\Arvores{str(numero)}.shp"
+    diretorio = fr"{path}\arvores"
+
+    if not os.path.exists(diretorio):
+        os.makedirs(diretorio)
 
     options = QgsVectorFileWriter.SaveVectorOptions()
     options.driverName = "ESRI Shapefile"
@@ -194,21 +198,8 @@ def geraVetorDePontos(verticesRoad, matVertices):
     for vertice in verticesRoad:
         road.append(QgsPointXY(matVertices[vertice].x,matVertices[vertice].y))
     return road
-
-def limpar_pasta(caminho_da_pasta):
-    # Verifica se o caminho existe e é um diretório
-    if os.path.exists(caminho_da_pasta) and os.path.isdir(caminho_da_pasta):
-        # Itera sobre os arquivos e subdiretórios dentro da pasta
-        for arquivo in os.listdir(caminho_da_pasta):
-            # Monta o caminho completo para cada arquivo ou subdiretório
-            caminho_completo = os.path.join(caminho_da_pasta, arquivo)
-            # Remove o arquivo ou diretório
-            if os.path.isfile(caminho_completo):
-                os.remove(caminho_completo)  # Remove o arquivo
-            elif os.path.isdir(caminho_completo):
-                os.rmdir(caminho_completo)  # Remove o diretório recursivamente
     
-def drawLine(colectionPointList, flag):
+def drawLine(colectionPointList, flag, i, path):
     crs = QgsCoordinateReferenceSystem('EPSG:31981')
     if(flag):
         vl = QgsVectorLayer("linestring", "Estradas", "memory")
@@ -228,6 +219,25 @@ def drawLine(colectionPointList, flag):
         vpr.addFeature(f)
     vl.updateExtents() 
     QgsProject.instance().addMapLayer(vl)
+
+    if(flag):
+        nome_arquivo = fr"{path}\estradas\estrada.shp"
+        diretorio = fr"{path}\estradas"
+
+        if not os.path.exists(diretorio):
+            os.makedirs(diretorio)
+        
+    else:
+        nome_arquivo = fr"{path}\trilhas\shapes\trilha.shp"
+        diretorio = fr"{path}\trilhas"
+
+        if not os.path.exists(diretorio):
+            os.makedirs(fr"{path}\trilhas\shapes")
+        
+
+    options = QgsVectorFileWriter.SaveVectorOptions()
+    options.driverName = "ESRI Shapefile"
+    QgsVectorFileWriter.writeAsVectorFormatV2(vl, nome_arquivo, QgsCoordinateTransformContext(), options)
     
 def drawLine1(colectionPointList, i):
     vl = QgsVectorLayer("linestring", "Line "+ str(i), "memory")
@@ -241,7 +251,7 @@ def drawLine1(colectionPointList, i):
     vl.updateExtents() 
     QgsProject.instance().addMapLayer(vl)
     
-def geraLinhas(verticesRoad, vetVertices, flag = True):
+def geraLinhas(verticesRoad, vetVertices, index , path, flag = True):
     pointList = []
     i=0
     if(flag):
@@ -258,40 +268,11 @@ def geraLinhas(verticesRoad, vetVertices, flag = True):
                 # drawLine1(rota,i)
                 i= i+1
 
-    drawLine(pointList, flag)
-    
+    drawLine(pointList, flag, index, path)
 
-
-def drawTrilha(colectionPointList):
-    vl = QgsVectorLayer("linestring", "Trilha", "memory")
-    vpr = vl.dataProvider()
-    vpr.addAttributes([QgsField("Type", QVariant.String)])
-    vl.updateFields()
-    f = QgsFeature()
-    f.setAttributes(["Principal"])
-    for pointCollection in colectionPointList:
-        f.setGeometry(QgsLineString(pointCollection))
-        vpr.addFeature(f)
-    vl.updateExtents() 
-    QgsProject.instance().addMapLayer(vl)
-    
-def drawTrilha1(colectionPointList, i):
-    vl = QgsVectorLayer("linestring", "Trilha "+ str(i), "memory")
-
-    vpr = vl.dataProvider()
-    vpr.addAttributes([QgsField("Type", QVariant.String)])
-
-    vl.updateFields()
-    f = QgsFeature()
-    f.setAttributes(["Principal"])
-    f.setGeometry(QgsLineString(colectionPointList))
-    vpr.addFeature(f)
-    vl.updateExtents() 
-    QgsProject.instance().addMapLayer(vl)
-
-def geraTrilhas(sol: list[SolucaoTrails], area):
+def geraTrilhas(sol: list[SolucaoTrails], area, index, path):
     roads = []
     for ptTrail in sol:
         roads.append(ptTrail.roads)
 
-    geraLinhas(roads, area, False)
+    geraLinhas(roads, area, index, path, False)

@@ -9,7 +9,8 @@ from ..Models.Inclinacao import Inclinacao
 
 #--------------------------------- CONSTANTS --------------------------------#
 PENALIZACAO_APP = 4
-PENALIZACAO_INUND = 2
+# PENALIZACAO_INUND = 2
+PENALIZACAO_INUND = 4
 PENALIZACAO_INCL_8 = 1
 PENALIZACAO_INCL_10 = 2
 PENALIZACAO_INCL_100 = 2

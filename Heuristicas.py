@@ -1,8 +1,8 @@
 from .Models.SolucaoStorageYard import SolucaoStorageYard
 from .Models.ArvoreExploravel import ArvoreExploravel
-from datetime import datetime
 from random import seed, randint
 import math
+import time
 import copy
 
 class Heuristicas:
@@ -79,7 +79,7 @@ class Heuristicas:
         return res
 
     def heuConstrutivaIter(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], num_iteracoes: int, restVolSup: float) -> SolucaoStorageYard:
-        tInicio = datetime.now()
+        tInicio = time.time()
         i = 0
         cont = 0
         contViaveis = 0
@@ -96,12 +96,12 @@ class Heuristicas:
 
             if res.FO < melhorSol.FO: # se a FO atual é melhor que a anterior e viável, então aceita a atual
                 melhorSol = res
-                melhorSol.tempoSol = (datetime.now() - tInicio).total_seconds()
+                melhorSol.tempoSol = time.time() - tInicio
 
             if res.viavel:
                 contViaveis = contViaveis + 1
             
-        melhorSol.tempo = (datetime.now() - tInicio).total_seconds()
+        melhorSol.tempo = time.time() - tInicio
         melhorSol.numIteracoes = cont
         melhorSol.numViaveis = contViaveis
         melhorSol.numInviaveis = cont - contViaveis

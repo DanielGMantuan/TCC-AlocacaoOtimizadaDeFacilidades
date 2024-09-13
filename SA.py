@@ -1,7 +1,6 @@
 from .Models.SolucaoStorageYard import SolucaoStorageYard
 from .Models.ArvoreExploravel import ArvoreExploravel
 from .Heuristicas import Heuristicas
-from datetime import datetime
 from random import seed, randint
 import time
 import math
@@ -43,7 +42,7 @@ class SA:
 
     def SAStorageYard(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], solInicial: SolucaoStorageYard, restVolSup: float, txResfriamento: float, iteracoesVizinhanca: float, tempInicial: float, tempCongelamento: float) -> SolucaoStorageYard:
         # inicializando variáveis
-        tfInicio = datetime.now() # get_time
+        tfInicio = time.time() # get_time
         i = 0
         j = 0
         k = 0
@@ -98,7 +97,7 @@ class SA:
                     if vizinho.FO < melhorSol.FO:
                         # melhorou a melhor até o momento em relação ao vizinho
                         melhorSol = vizinho
-                        melhorSol.tempoSol = (datetime.now() - tfInicio).total_seconds() # get_time
+                        melhorSol.tempoSol = time.time() - tfInicio # get_time
                 else:
                     # x = (randint(1, 32767) % 1001)
                     x = randint(0, 1000)
@@ -124,7 +123,7 @@ class SA:
 
             IterTemp = 0
 
-        melhorSol.tempo = (datetime.now() - tfInicio).total_seconds()
+        melhorSol.tempo = time.time() - tfInicio
         melhorSol.numIteracoes = cont
         melhorSol.numViaveis = contViaveis
         melhorSol.numInviaveis = contInviaveis

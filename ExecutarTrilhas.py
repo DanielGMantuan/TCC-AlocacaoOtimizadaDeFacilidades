@@ -12,6 +12,7 @@ from .Models.Area import Area
 from .Models.Desvio import Desvio
 from .Services.Draw import geraTrilhas
 import copy
+import time
 
 INFINITY = inf
 EULER = 2.718281828459045235360287
@@ -94,7 +95,7 @@ def obterSolAleTrilha(vertPatios: List[int], qtdPatios: int, qtdTrilhas: int, qt
     return solPtTtrails
 
 def heuConstIterTrilha(vertPatios: List[int], qtdPatios: int, qtdTrilhas: int, qtdArvPatio: int, area: List[Area], floresta: List[ArvoreExploravel], distancias: List[List[float]], num_iteracoes: int,restVolSup: float) -> SolucaoPtTrails:
-    #tInicio = get_time()
+    tInicio = time.time()
     count = 0
     contViaveis = 0
     res = SolucaoPtTrails()
@@ -109,12 +110,12 @@ def heuConstIterTrilha(vertPatios: List[int], qtdPatios: int, qtdTrilhas: int, q
         res = obterSolAleTrilha(vertPatios, qtdPatios, qtdTrilhas, qtdArvPatio, area, floresta, distancias, restVolSup)
         if res.FO < melhorSol.FO:
             melhorSol = res
-            #melhorSol.tempoSol = (get_time() - tInicio / 100.00)
+            melhorSol.tempoSol = (time.time() - tInicio / 100.00)
         
         if res.viavel:
             contViaveis = contViaveis + 1
     
-    #melhorSol.tempo = (get_time() - tInicio) / 100.00
+    melhorSol.tempo = (time.time() - tInicio) / 100.00
     melhorSol.numIteracoes = count
     melhorSol.numViaveis = contViaveis
     melhorSol.numInviaveis = count - contViaveis
@@ -140,7 +141,7 @@ def gerarVizinhoTrilha(vertPatios, qtdPatios, qtdTrilhas, qtdArvPatio, area, flo
     return solAtual
 
 def SATrails(vertPatios: List[int], qtdPatios: int, qtdTrilhas:int, qtdArvPatio:int, area: List[Area], floresta: List[ArvoreExploravel], distancias: List[List[float]], solInicial: SolucaoPtTrails, restVolSup:float):
-    # tInicio = get_time()
+    tInicio = time.time()
     cont = 0
     countViaveis = 0
     countInviaveis = 0
@@ -188,7 +189,7 @@ def SATrails(vertPatios: List[int], qtdPatios: int, qtdTrilhas:int, qtdArvPatio:
                 if vizinho.FO < melhorSol.FO:
                     #melhorou a melhor solucao ate o momento em relacao ao vizinho
                     melhorSol = vizinho
-                    #melhorSol.tempoSol = (get_time() - tInicial) / 100.0
+                    melhorSol.tempoSol = (time.time() - tInicio) / 100.0
             else:
                 x = (random.randint(0, 1000))
                 x = x / 1000
@@ -206,7 +207,7 @@ def SATrails(vertPatios: List[int], qtdPatios: int, qtdTrilhas:int, qtdArvPatio:
                         patios[patio - 1] = 1
         temp = TAXARESFRIAMENTO_TRAIL * temp
         IterTemp = 0
-    #melhorSol.tempo = (get_time() - tInicio) / 100.0
+    melhorSol.tempo = (time.time() - tInicio) / 100.0
     melhorSol.numIteracoes = cont
     melhorSol.numViaveis = countViaveis
     melhorSol.numInviaveis = countInviaveis
@@ -239,7 +240,7 @@ def atualizaVerticesTrilhas(grPatio: Grafo, solPtTrilhas, solTrilha, vInicioTril
 
 def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[Desvio]], patioAtual: int, qtdTrilhas: int, solPtTrilhas: SolucaoPtTrails, arestasPatios: List[int], NUM_VERTICES: int):
     solTrilha = SolucaoRoad(NUM_VERTICES)
-    #tInicio = get_time()
+    tInicio = time.time()
     sol = cria_SolTrails(qtdTrilhas, NUM_VERTICES)
     sol.patio = patioAtual
     sol.distanciaTotal = 0
@@ -253,7 +254,7 @@ def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[
     vDistTrilha = [INFINITY for _ in range(qtdTrilhas)]
     
     for i in range(qtdTrilhas):
-        #tInicioTrilha = get_time()
+        tInicioTrilha = time.time()
         pTerminoTrilha = solPtTrilhas.patios[i]
         #obtendo as distancias
         temp = grPatio.Dijkstra(pInicioTrilha, pTerminoTrilha)
@@ -280,12 +281,12 @@ def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[
             solTrilha.FO = 0
             solTrilha.distanciaTotal = 0
         
-        #solTrilha.tempo = solTrilha.tempoSol = (get_time() - tInicioTrilha) / 100.0
+        solTrilha.tempo = solTrilha.tempoSol = (time.time() - tInicioTrilha) / 100.0
         sol.FOTotal = sol.FOTotal + solTrilha.FO
         sol.distanciaTotal = sol.distanciaTotal + solTrilha.distanciaTotal
         sol.roads[i] = solTrilha
     
-    #sol.tempoTotal = (get_time() - tInicio) / 100.0
+    sol.tempoTotal = (time.time() - tInicio) / 100.0
     return sol
 
 def cria_SolTrails(nro_trails, NUM_VERTICES) -> SolucaoTrails:
@@ -298,7 +299,7 @@ def cria_SolTrails(nro_trails, NUM_VERTICES) -> SolucaoTrails:
 class ExecutarTrilhas:
     
     def trails(self, area: List[Area], solRoads: SolucaoRoads, patios: List[Patio], solPatios: SolucaoStorageYard, floresta: List[ArvoreExploravel], arvoreSelPatios: List[List[int]], distancias: List[List[float]], app: Optional[List[int]], qtdArvores: List[int], restVolSup: float, desvios: Optional[List[Desvio]], NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA): 
-        #tInicial = get_time()
+        tInicial = time.time()
         tempoYardTotal = 0.0
         distanciaYardMedia = 0.0
         FOYardTotal = 0.0
@@ -307,7 +308,6 @@ class ExecutarTrilhas:
         FORoadTotal = 0.0
 
         solucaoTrilha: List[SolucaoTrails] =[]
-        roadPatio = SolucaoRoad(NUM_VERTICES)
         grPatio = Grafo()
         
         #pre-processamento - marcando os vertices de estrada proibidos
@@ -340,7 +340,6 @@ class ExecutarTrilhas:
             vSubDistPatios = [0.0 for _ in range(qtdArvores[i])]
             k = 0
 
-
             for j in range (NUM_ARVORES_EXPLORAVEIS):
                 if arvoreSelPatios[i][j] == 1:
                     vSubArvPatios[k] = floresta[j]
@@ -357,53 +356,46 @@ class ExecutarTrilhas:
             #localizando os vertices vizinhos
             qtdRealVertPatio = localizarVerticesVizinhos(area, patios, verticesProibidos, patioAtual, arvMaisDistante, vertPatios, NUM_VERTICES)
             
-            #TODO:
-            # Ver se isso esta correto, pois qtdRealVertPatio esta sendo 0 em alguns momentos, e por causa da solucao falha de patios?
+            vertRealPatios = [0 for _ in range(qtdRealVertPatio)]
+            for j in range(qtdRealVertPatio):
+                vertRealPatios[j] = vertPatios[j] #vertRealPatios recebe id de cada vertice proximo do patio
+
+            #obtendo os pontos para as trilhas
+            solPtTrilhas = heuConstIterTrilha(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, NUM_ITERACOES, restVolSup)
+            solPtTrilhas.__str__()
+
+            solPtTrilhas = SATrails(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, solPtTrilhas, restVolSup)
             
-            if(qtdRealVertPatio == 0):
-                print("\n\n\npatioAtual: " + str(patioAtual) + " \nqtdRealVertPatio = 0\n\n\n")
-            else:
+            tempoYardTotal = tempoYardTotal + solPtTrilhas.tempoSol
+            FOYardTotal = FOYardTotal + solPtTrilhas.FO
 
-                vertRealPatios = [0 for _ in range(qtdRealVertPatio)]
-                for j in range(qtdRealVertPatio):
-                    vertRealPatios[j] = vertPatios[j] #vertRealPatios recebe id de cada vertice proximo do patio
-
-                #obtendo os pontos para as trilhas
-                solPtTrilhas = heuConstIterTrilha(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, NUM_ITERACOES, restVolSup)
-                solPtTrilhas.__str__()
-
-                solPtTrilhas = SATrails(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, solPtTrilhas, restVolSup)
-                
-                tempoYardTotal = tempoYardTotal + solPtTrilhas.tempoSol
-                FOYardTotal = FOYardTotal + solPtTrilhas.FO
-
-                #construindo grafo 
-                qtdRealVertPatio = qtdRealVertPatio + 1
-                vertArestaPatios = [0 for _ in range(qtdRealVertPatio)]
-                vertArestaPatios[0] = patios[patioAtual - 1].vertice
-                for j in range(1, qtdRealVertPatio):
-                    vertArestaPatios[j] = vertRealPatios[j - 1]
-                
-                #criando o grafo do patio para neste grafo definir as trilhas
-                grPatio.cria_Grafo(qtdRealVertPatio, GRAU_MAX, PONDERADO)
-                grPatio.insereArestasPatios(area, vertArestaPatios, qtdRealVertPatio, desvios)
-                #definindo as trilhas no grafo do patio
-                sol = trailsAprovTrilhas(grPatio, area, desvios, patioAtual, qtdTrilhas, solPtTrilhas, vertArestaPatios, NUM_VERTICES)
-
-                distanciaRoadTotal = sol.distanciaTotal + distanciaRoadTotal
-                FORoadTotal = sol.FOTotal + FORoadTotal
-
-                for road in sol.roads:
-                    aux = []
-                    for vertice in road.verticesRoad:
-                        aux.append(vertArestaPatios[vertice]-1)
-                    road.verticesRoad = copy.copy(aux)
-                
-                solucaoTrilha.append(sol)
+            #construindo grafo 
+            qtdRealVertPatio = qtdRealVertPatio + 1
+            vertArestaPatios = [0 for _ in range(qtdRealVertPatio)]
+            vertArestaPatios[0] = patios[patioAtual - 1].vertice
+            for j in range(1, qtdRealVertPatio):
+                vertArestaPatios[j] = vertRealPatios[j - 1]
             
-        #tempoRoadTotal = (get_time() - tfInicio) / 100.0
+            #criando o grafo do patio para neste grafo definir as trilhas
+            grPatio.cria_Grafo(qtdRealVertPatio, GRAU_MAX, PONDERADO)
+            grPatio.insereArestasPatios(area, vertArestaPatios, qtdRealVertPatio, desvios)
+            #definindo as trilhas no grafo do patio
+            sol = trailsAprovTrilhas(grPatio, area, desvios, patioAtual, qtdTrilhas, solPtTrilhas, vertArestaPatios, NUM_VERTICES)
+
+            distanciaRoadTotal = sol.distanciaTotal + distanciaRoadTotal
+            FORoadTotal = sol.FOTotal + FORoadTotal
+
+            for road in sol.roads:
+                aux = []
+                for vertice in road.verticesRoad:
+                    aux.append(vertArestaPatios[vertice]-1)
+                road.verticesRoad = copy.copy(aux)
+            
+            solucaoTrilha.append(sol)
+            
+        tempoRoadTotal = (time.time() - tInicial) / 100.0
         distanciaYardMedia = distanciaYardMedia + (FOYardTotal / NUM_ARVORES_EXPLORAVEIS)
-        print("-------- Resultado final de locais -------- ")
+        print("-------- Resultado final de patios -------- ")
         print( "Distancia media\t Fo total\t Tempo (s)\n")
         print( str(distanciaYardMedia)+" \t")
         print( str(FOYardTotal)+"\t")

@@ -21,6 +21,17 @@ class SolucaoTrails:
         
         return result
 
+    def fileWritter(self, index: int, path: str):
+        caminho = fr"{path}\trilhas\patio{self.patio}.txt"
+
+        with open(caminho, "w") as arquivo:
+            arquivo.write("---- Solucao Trails ----" + "\n")
+            arquivo.write("Patio: " + str(self.patio) + "\n")
+            arquivo.write("DistanciaTotal: " + str(self.distanciaTotal) + "\n")
+            arquivo.write("FOTotal: " + str(self.FOTotal) + "\n")
+            arquivo.write("Roads: " + "\n")
+            for road in self.roads:
+                arquivo.write(road.__str__() + "\n")
 
 class SolucaoPtTrails:
 

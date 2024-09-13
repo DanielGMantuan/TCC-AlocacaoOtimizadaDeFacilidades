@@ -24,7 +24,7 @@ class SolucaoRoad:
         self.verticesRoad = []
     
     def __str__(self):
-        result = "\n----Solucao Road"
+        result = "\n---- Solucao Road ----"
         result += "\ninicio:" + str(self.estrada.inicio)
         result += "\ntermino:" + str(self.estrada.termino)
         result += "\ndistancia total:" + str(self.distanciaTotal)
@@ -71,3 +71,15 @@ class SolucaoRoads:
         result += "FOTotal\n" + str(self.FOTotal) + "\n"
         
         return result
+    
+    def fileWritter(self, index: int, path: str):
+        caminho = fr"{path}\estrada.txt"
+        with open(caminho, "w") as arquivo:
+            arquivo.write("---- Solucao Roads ----" + "\n")
+            arquivo.write("tempo total\n" + str(self.tempoTotal) + "\n")
+            arquivo.write("distancia total\n" + str(self.distanciaTotal) + "\n")
+            arquivo.write("FOTotal\n" + str(self.FOTotal) + "\n")
+            arquivo.write("roads: " + "\n")
+            for i in range(len(self.roads)):
+                arquivo.write("Type:" + str(self.typeRoad[i]) + "\n")
+                arquivo.write(self.roads[i].__str__() + "\n")
