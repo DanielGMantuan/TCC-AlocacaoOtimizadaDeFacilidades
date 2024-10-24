@@ -4,6 +4,7 @@ from ..Services.commons import calculaDistancia,calculaDistanciaPenalizada, calc
 from .Area import Area
 from .Desvio import Desvio
 from .Inclinacao import Inclinacao
+import time
 
 NUM_DIS_MAX_VIZINHO = int(43)
 
@@ -174,6 +175,7 @@ class Grafo:
 
 
     def Dijkstra(self, orig, dest) -> SolucaoRoad:
+        tinicio = time.time()
         sol = SolucaoRoad(self.nro_vertices)
         sol.cicloNegativo = 0
         sol.estrada.inicio = orig
@@ -223,6 +225,8 @@ class Grafo:
             sol.numVerticesRota = sol.numVerticesRota + 1
         sol.FO = sol.peso[sol.estrada.termino]
         sol.distanciaTotal = sol.distancia[sol.estrada.termino]
-        #TODO: questao do tempo e do tempo da SO
+        sol.tempo = (time.time() - tinicio) / 100.00
+        sol.tempoSol = sol.tempo
+ 
         return sol
     

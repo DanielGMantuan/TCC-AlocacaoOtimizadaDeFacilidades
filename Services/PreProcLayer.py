@@ -89,7 +89,7 @@ class PreProcLayer:
         return matriz
 
     def lerArquivoDistancias(self) -> list[list[float]]:
-        caminho_arquivo = r"C:\Users\NOTE155\Desktop\Iniciacao Cientifica\Dados\Distancias\Inst_01_matrizdistancias.txt"
+        caminho_arquivo = r"C:\Users\NOTE155\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\alocacao_otimizada\MOCK\Inst_01_matrizdistancias.txt"
         matriz:list[list[float]] = []
         with open(caminho_arquivo, 'r') as arquivo:
             for linha in arquivo:

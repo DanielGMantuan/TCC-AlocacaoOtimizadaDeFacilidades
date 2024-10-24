@@ -432,6 +432,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QPushButton" name="menu_btn">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>32</width>
@@ -447,8 +450,24 @@
              <property name="cursor">
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: none;  /* Remove a borda */
+    background-color: rgba(0, 0, 0, 0);  /* Fundo transparente */
+}</string>
+             </property>
              <property name="text">
               <string/>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>assets/menu-aberto.png</normaloff>assets/menu-aberto.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
              </property>
             </widget>
            </item>

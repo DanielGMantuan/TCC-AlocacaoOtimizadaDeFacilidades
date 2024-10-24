@@ -238,7 +238,7 @@ def atualizaVerticesTrilhas(grPatio: Grafo, solPtTrilhas, solTrilha, vInicioTril
         if vAtual == -1:
             break
 
-def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[Desvio]], patioAtual: int, qtdTrilhas: int, solPtTrilhas: SolucaoPtTrails, arestasPatios: List[int], NUM_VERTICES: int):
+def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[Desvio]], patioAtual: int, qtdTrilhas: int, solPtTrilhas: SolucaoPtTrails, NUM_VERTICES: int):
     solTrilha = SolucaoRoad(NUM_VERTICES)
     tInicio = time.time()
     sol = cria_SolTrails(qtdTrilhas, NUM_VERTICES)
@@ -280,6 +280,7 @@ def trailsAprovTrilhas(grPatio: Grafo, area: List[Area], desvios: Optional[List[
             solTrilha.numVerticesRota = 0
             solTrilha.FO = 0
             solTrilha.distanciaTotal = 0
+            solTrilha.verticesRoad = []
         
         solTrilha.tempo = solTrilha.tempoSol = (time.time() - tInicioTrilha) / 100.0
         sol.FOTotal = sol.FOTotal + solTrilha.FO
@@ -315,7 +316,6 @@ class ExecutarTrilhas:
         verticesProibidos = [0 for _ in range(NUM_VERTICES)]
 
         if(app != None):
-            print("App existe")
             #marcando os vertices de APPs como proibidos
             for i in range(NUM_VERTICES):
                 if buscaAPP(app, i):
@@ -362,7 +362,6 @@ class ExecutarTrilhas:
 
             #obtendo os pontos para as trilhas
             solPtTrilhas = heuConstIterTrilha(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, NUM_ITERACOES, restVolSup)
-            solPtTrilhas.__str__()
 
             solPtTrilhas = SATrails(vertRealPatios, qtdRealVertPatio, qtdTrilhas, qtdArvores[i], area, vSubArvPatios, distancias, solPtTrilhas, restVolSup)
             
@@ -380,17 +379,18 @@ class ExecutarTrilhas:
             grPatio.cria_Grafo(qtdRealVertPatio, GRAU_MAX, PONDERADO)
             grPatio.insereArestasPatios(area, vertArestaPatios, qtdRealVertPatio, desvios)
             #definindo as trilhas no grafo do patio
-            sol = trailsAprovTrilhas(grPatio, area, desvios, patioAtual, qtdTrilhas, solPtTrilhas, vertArestaPatios, NUM_VERTICES)
+            sol = trailsAprovTrilhas(grPatio, area, desvios, patioAtual, qtdTrilhas, solPtTrilhas, NUM_VERTICES)
 
             distanciaRoadTotal = sol.distanciaTotal + distanciaRoadTotal
             FORoadTotal = sol.FOTotal + FORoadTotal
 
+            # Transformar de referencia de vertice local para os vertices reais
             for road in sol.roads:
                 aux = []
                 for vertice in road.verticesRoad:
                     aux.append(vertArestaPatios[vertice]-1)
                 road.verticesRoad = copy.copy(aux)
-            
+
             solucaoTrilha.append(sol)
             
         tempoRoadTotal = (time.time() - tInicial) / 100.0

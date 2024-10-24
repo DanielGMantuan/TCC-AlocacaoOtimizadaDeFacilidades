@@ -313,7 +313,7 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 7 * 60 * 60 # 7 horas
+        TEMPOEXEC = 16 * 60 * 60 # 16 horas
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
@@ -355,52 +355,55 @@ class alocacao_otimizada:
         ### ---- TESTANDO ENTRADA FIXA ---- ###
 
         # newSolucao: SolucaoStorageYard = SolucaoStorageYard()
-        # newSolucao.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176] 
-        # # # # [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]
+        # newSolucao.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # # # # [667, 526, 1280, 921, 294, 496, 1358, 63, 1483, 177, 638, 1525, 1042, 308]  # essa e a minha melhor
         # # # # [537, 268, 1344, 1065, 1405, 750, 1494, 415, 291, 304, 1373, 950, 720, 173]
         # # # # [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]    #essa e a solucao do professor?
         # # # # [1525, 1434, 1401, 1086, 1371, 969, 734, 547, 296, 423, 273, 176, 764, 257]
 
-        # newSolucao = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, newSolucao, restVolSup)
+        
+
+        #---------------DEFININDO NUMERO DE ACESSOS----------------- 
+        # i = 1   
+        # estradaDeAcesso = getAccesPoints(dlg)
+        # NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
+
+        # if(NUM_ACCESS_ROAD == 0):
+        #     QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
+        #     return
+        
+        # path = fr"{path}\resultado{str(i)}"
+        # if os.path.exists(path):
+        #     # Deletar o diretório e todo o conteúdo
+        #     shutil.rmtree(path)
+
+        # solPatios = SolucaoStorageYard()
+        # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # solPatios = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup)
 
         # #---------------DEFININDO GRAFO-----------------
-
         # grafo = Grafo()
         # grafo.cria_Grafo(NUM_VERTICES, 8, 1)
         # grafo.insereArestaArea(area, desvios, inundacao, app, inclinacao)
 
         # # -------------- ROADS -------------
-        
-        # NUM_ACCESS_ROAD = 1
-        # estradaDeAcesso = AccessRoad()
         # solRoad_aux = RoadsAprovTrecho()
-        # estradaDeAcesso.inicio.append(1)
-        # solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, newSolucao, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
+        # solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, solPatios, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
 
         # # -------------- TRAILS -------------
-        # arvoreSelPatios = marcaArvoresPatios(newSolucao, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
+        # arvoreSelPatios = marcaArvoresPatios(solPatios, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
         # quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
         # trilha = ExecutarTrilhas()
-        # solTrilha = trilha.trails( area, solRoad, patios, newSolucao, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
+        # solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-        # # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 1)
-        # # geraLinhas(solRoad.roads, area) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-        # # geraTrilhas(solTrilha, area)
-        # # newSolucao.fileWritter(1, restVolSup)
+        # geraLinhas(solRoad.roads, area, i, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+        # geraTrilhas(solTrilha, area, i, path)
+        # geraPontosPatiosMarcelo(solPatios, camadaPatio, i, path)
+        # for j in range(len(solPatios.arvores)):
+        #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, path)
 
-        # path = fr"{path}\resultado{str(1)}"
-        # if os.path.exists(path):
-        #     # Deletar o diretório e todo o conteúdo
-        #     shutil.rmtree(path)
-
-        # geraPontosPatiosMarcelo(newSolucao, camadaPatio, 1, path)
-        # geraLinhas(solRoad.roads, area, 1, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-        # geraTrilhas(solTrilha, area, 1, path)
-        # for j in range(len(newSolucao.arvores)):
-        #     geraPontosArvores(newSolucao.arvores[j], arvoresExploraveis, newSolucao.patios[j], 1, path)
-            
-        # newSolucao.fileWritter(1, restVolSup, path)
-        # solRoad.fileWritter(1, path)
+        # solPatios.fileWritter(i, restVolSup, path)
+        # solRoad.fileWritter(i, path)
         # for j in range(len(solTrilha)):
         #     solTrilha[j].fileWritter(1, path)
 

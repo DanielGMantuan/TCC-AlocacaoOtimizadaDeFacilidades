@@ -54,14 +54,10 @@ def calculaDistanciaDesviosPenalizada(origem, destino, desvios: Optional[list[De
 
 #---------------------------------- PENALIZACAO --------------------------------#
 def buscaAPP(vetVerticesApp: list[int], destino: int):
-    if destino in vetVerticesApp:
-        return 1
-    return 0
+    return vetVerticesApp[destino]
 
 def buscaInund(vetVerticesInund: list[int], destino: int):
-    if destino in  vetVerticesInund:
-        return 1
-    return 0
+    return vetVerticesInund[destino]
 
 def buscaInclinacao(vetInclinacao: list[Inclinacao], destino:int):
     i = vetInclinacao[destino]
@@ -123,10 +119,3 @@ def quantidadeArvoresPatio(arvoreSelPatios: List[List[int]], NUM_PATIOS, NUM_ARV
     print(quantidadeArvores)
     return quantidadeArvores
         
-
-
-#def buscaAPP(APP, vertice):
-#    return APP[vertice]
-
-#def buscaInund(Inund, vertice):
-#    return Inund[vertice]
