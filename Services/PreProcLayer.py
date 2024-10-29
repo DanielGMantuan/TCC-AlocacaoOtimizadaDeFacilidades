@@ -88,10 +88,9 @@ class PreProcLayer:
         
         return matriz
 
-    def lerArquivoDistancias(self) -> list[list[float]]:
-        caminho_arquivo = r"C:\Users\NOTE155\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\alocacao_otimizada\MOCK\Inst_01_matrizdistancias.txt"
+    def lerArquivoDistancias(self, filePath: str) -> list[list[float]]:
         matriz:list[list[float]] = []
-        with open(caminho_arquivo, 'r') as arquivo:
+        with open(filePath, 'r') as arquivo:
             for linha in arquivo:
                 valores = linha.strip().split('\t')  # Divide os valores separados por tabulação
                 linha = [float(valor.replace(',', '.').strip()) for valor in valores]  # Remove espaços e converte para float

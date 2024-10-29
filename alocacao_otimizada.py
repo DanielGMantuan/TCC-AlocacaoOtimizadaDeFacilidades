@@ -256,6 +256,7 @@ class alocacao_otimizada:
             dicionario["arvoresRemanescente"] = False
 
         path = dlg.resultPath.text()
+        patArvoreDistPath = dlg.distArvoresPath.text().replace("\\", "/")
         # ----------------Heurística-----------------
 
         DISTANCIA_MAXIMA = float(dlg.lineEditDistArvorePatio.text())
@@ -342,7 +343,7 @@ class alocacao_otimizada:
             app = None
 
         # Pega o mock dos valores de distancia
-        distanciasPatArv = preProcLayer.lerArquivoDistancias()
+        distanciasPatArv = preProcLayer.lerArquivoDistancias(patArvoreDistPath)
 
         volumeTot = preProcLayer.calculaVolume(arvoresExploraveis, NUM_ARVORES_EXPLORAVEIS)
 
