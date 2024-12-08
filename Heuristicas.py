@@ -15,6 +15,7 @@ class Heuristicas:
         self.PENALIZACAO_VOLUME = PENALIZACAO_VOLUME
 
     def calculaFOPatio(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], solAtual: SolucaoStorageYard, restVolSup: float) -> SolucaoStorageYard:
+        tInicio = time.time()
         patio = 0
         distancia = 0
         distanciaMenor = 0
@@ -22,6 +23,7 @@ class Heuristicas:
         diferencaDistancia = 0
         distanciaTotal = 0
         res = copy.deepcopy(solAtual)
+        res.t = 0.0
 
         res.volumes = [0 for _ in range(self.NUM_PATIOS)]
         res.arvores = [[] for _ in range(14)]   
@@ -53,6 +55,8 @@ class Heuristicas:
 
         res.FO = distanciaTotal
         res.viavel = (diferencaVolume + diferencaDistancia) == 0
+
+        res.t = time.time() - tInicio
         return res
 
     def obterSolAleatoria(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], restVolSup: float) -> SolucaoStorageYard:
@@ -88,11 +92,13 @@ class Heuristicas:
         melhorSol.FO = math.inf  # variaveis para controle da FO
         melhorSol.numViaveis = 0
         melhorSol.numInviaveis = 0
+        tempoCalculoFOHeuristica = 0.0
 
         # laço que faz a busca aleatório e gulosa
         for i in range(num_iteracoes):
             cont = cont + 1
             res = self.obterSolAleatoria(floresta, distancias, restVolSup)
+            tempoCalculoFOHeuristica += res.t
 
             if res.FO < melhorSol.FO: # se a FO atual é melhor que a anterior e viável, então aceita a atual
                 melhorSol = res
@@ -102,9 +108,11 @@ class Heuristicas:
                 contViaveis = contViaveis + 1
             
         melhorSol.tempo = time.time() - tInicio
+        melhorSol.tempoHeuristica = melhorSol.tempo
         melhorSol.numIteracoes = cont
         melhorSol.numViaveis = contViaveis
         melhorSol.numInviaveis = cont - contViaveis
+        melhorSol.tempoCalculoFO_Heuristica = tempoCalculoFOHeuristica
 
         return melhorSol
 

@@ -203,6 +203,7 @@ class alocacao_otimizada:
             self.iface.removeToolBarIcon(action)
 
     def runProcStorageYard(self, layers, dlg):
+        tempoInicial = time.time()
         multipleExceptions = MultipleLayerException()
 
         verticesIndex = dlg.cmb_vertices.currentIndex()
@@ -410,7 +411,7 @@ class alocacao_otimizada:
 
         ### ---- FIM TESTANDO ENTRADA FIXA ---- ###
 
-        for i in range(1):
+        for i in range(1, 2):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
             estradaDeAcesso = getAccesPoints(dlg)
             NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
@@ -453,6 +454,8 @@ class alocacao_otimizada:
             for j in range(len(solPatios.arvores)):
                 geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, path)
 
+            solPatios.tempoDjisktra = solRoad.tempoTotal
+            solPatios.tempoTotal = time.time() - tempoInicial
             solPatios.fileWritter(i, restVolSup, path)
             solRoad.fileWritter(i, path)
             for j in range(len(solTrilha)):

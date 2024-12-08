@@ -60,6 +60,7 @@ class SA:
         melhorSol.numViaveis = 0
         melhorSol.numInviaveis = 0
         patios = [0 for _ in range(self.NUM_VERTICES_PATIOS)]
+        tempoTotalCalculoFOSA = 0.0
 
         # marcando com 1 os elementos da solução inicial
         for k in range(self.NUM_PATIOS):
@@ -77,6 +78,7 @@ class SA:
                 IterTemp = IterTemp + 1
                 cont = cont + 1
                 vizinho = self.gerarVizinhoPatio(floresta, distancias, solucaoInicial, patios, restVolSup)
+                tempoTotalCalculoFOSA += vizinho.t
                 # obtendo a variação da solução inicial para o vizinho
                 variacao = vizinho.FO - solucaoInicial.FO
                 if vizinho.viavel == True:
@@ -123,9 +125,11 @@ class SA:
 
             IterTemp = 0
 
-        melhorSol.tempo = time.time() - tfInicio
+        melhorSol.tempo += time.time() - tfInicio
         melhorSol.numIteracoes = cont
         melhorSol.numViaveis = contViaveis
         melhorSol.numInviaveis = contInviaveis
+        melhorSol.tempoCalculoFO_SA = tempoTotalCalculoFOSA
+        melhorSol.tempoSA = time.time() - tfInicio 
         return melhorSol
 
