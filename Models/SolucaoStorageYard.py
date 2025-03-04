@@ -21,6 +21,31 @@ class SolucaoStorageYard:
     t = 0.0
     tempoDjisktra = 0.0
 
+    @classmethod
+    def from_dict(cls, data):
+        instance = cls()
+        instance.patios = data['patios']
+        instance.volumes = data['volumes']
+        instance.distanciaTotal = data['distanciaTotal']
+        instance.FO = data['FO']
+        instance.tempoSol = data['tempoSol']
+        instance.tempo = data['tempo']
+        instance.numIteracoes = data['numIteracoes']
+        instance.numViaveis = data['numViaveis']
+        instance.numInviaveis = data['numInviaveis']
+        instance.viavel = data['viavel']
+
+        instance.arvores = []
+        for sublista in data['arvores']:
+            arvores_sublista = []
+            for arvore_data in sublista:
+                # Supondo que Arvore seja uma classe ou estrutura com id e numero
+                arvore = {'id': arvore_data['id'], 'numero': arvore_data['numero']}
+                arvores_sublista.append(arvore)
+            instance.arvores.append(arvores_sublista)
+
+        return instance
+
     def fileWritter(self, index: int, restVolSup:float, path: str):
         caminho = fr"{path}\patios.txt"
         with open(caminho, "w") as arquivo:

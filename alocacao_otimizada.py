@@ -52,8 +52,17 @@ from .ExecutarTrilhas import ExecutarTrilhas
 from .Services.commons import marcaArvoresPatios, quantidadeArvoresPatio
 from .Exceptions.LayerException import LayerException, MultipleLayerException
 from .Exceptions.SimulatedAnnealingException import SimulatedAnnealingException, MultipleSimulatedAnnealingExceptionException 
+from alocacao_otimizada import TadRoadForest
 
 seed(1)
+
+# #ifdef INST_1
+# 	//instancia 1
+# 	estradasAcesso.inicio[0] = 27;
+# 	estradasAcesso.inicio[1] = 1349;
+# 	estradasAcesso.inicio[2] = 485;
+# 	estradasAcesso.termino = 1802;
+# #endif
 
 class alocacao_otimizada:
     """QGIS Plugin Implementation."""
@@ -271,9 +280,9 @@ class alocacao_otimizada:
 
         NUM_ROADS = NUM_PATIOS + 1
 
-        NUM_ARV_TRILHA = 15
+        NUM_ARV_TRILHA = int(15)
 
-        PENALIZACAO_VOLUME = 1000
+        PENALIZACAO_VOLUME = int(1000)
 
         NUM_VERTICES = int(camadaVertices.featureCount())
 
@@ -315,7 +324,7 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 16 * 60 * 60 # 16 horas
+        TEMPOEXEC = 12 * 60 * 60 # em horas
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
@@ -410,6 +419,9 @@ class alocacao_otimizada:
         #     solTrilha[j].fileWritter(1, path)
 
         ### ---- FIM TESTANDO ENTRADA FIXA ---- ###
+        
+        # Definindo a floresta e a distancia globalmente no modulo criado
+        TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
 
         for i in range(1, 2):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    

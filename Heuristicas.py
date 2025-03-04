@@ -4,10 +4,11 @@ from random import seed, randint
 import math
 import time
 import copy
+from alocacao_otimizada import TadRoadForest
 
 class Heuristicas:
 
-    def __init__(self, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME):
+    def __init__(self, NUM_PATIOS: int, NUM_ARVORES_EXPLORAVEIS: int, DISTANCIA_MAXIMA: float, NUM_VERTICES_PATIOS: int, PENALIZACAO_VOLUME: int):
         self.NUM_PATIOS = NUM_PATIOS
         self.NUM_ARVORES_EXPLORAVEIS = NUM_ARVORES_EXPLORAVEIS
         self.DISTANCIA_MAXIMA = DISTANCIA_MAXIMA
@@ -26,7 +27,7 @@ class Heuristicas:
         res.t = 0.0
 
         res.volumes = [0 for _ in range(self.NUM_PATIOS)]
-        res.arvores = [[] for _ in range(14)]   
+        res.arvores = [[] for _ in range(self.NUM_PATIOS)]   
 
         #Comparando as distancias dos pontos aleatorios
         for j in range(self.NUM_ARVORES_EXPLORAVEIS):
@@ -79,8 +80,15 @@ class Heuristicas:
             patios[patio - 1] = 1
             res.patios[i] = patio
 
-        res = self.calculaFOPatio(floresta, distancias, res, restVolSup)
-        return res
+        # res = self.calculaFOPatio(floresta, distancias, res, restVolSup)
+        res2dict = TadRoadForest.calculaFOPatio(res, restVolSup)
+        res2 = SolucaoStorageYard.from_dict(res2dict)
+        # print(f"Qgis FO: {res.FO}")
+        # print(f"Num patios: {self.NUM_PATIOS}")
+        # print(type(res2), res2)
+        # print(res.arvores)
+        # print(res2.arvores)
+        return res2
 
     def heuConstrutivaIter(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], num_iteracoes: int, restVolSup: float) -> SolucaoStorageYard:
         tInicio = time.time()
@@ -115,6 +123,3 @@ class Heuristicas:
         melhorSol.tempoCalculoFO_Heuristica = tempoCalculoFOHeuristica
 
         return melhorSol
-
-    
-

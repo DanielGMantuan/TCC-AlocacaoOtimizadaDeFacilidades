@@ -115,7 +115,5 @@ def quantidadeArvoresPatio(arvoreSelPatios: List[List[int]], NUM_PATIOS, NUM_ARV
         for j in range(NUM_ARVORES_EXPLORAVEIS):
             if arvoreSelPatios[i][j]==1:
                 quantidadeArvores[i] = quantidadeArvores[i] + 1
-    print("vetor quantidadeArvoresn\n[")
-    print(quantidadeArvores)
     return quantidadeArvores
         
