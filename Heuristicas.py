@@ -4,6 +4,7 @@ from random import seed, randint
 import math
 import time
 import copy
+import gc
 from alocacao_otimizada import TadRoadForest
 
 class Heuristicas:
@@ -14,6 +15,7 @@ class Heuristicas:
         self.DISTANCIA_MAXIMA = DISTANCIA_MAXIMA
         self.NUM_VERTICES_PATIOS = NUM_VERTICES_PATIOS
         self.PENALIZACAO_VOLUME = PENALIZACAO_VOLUME
+
 
     def calculaFOPatio(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], solAtual: SolucaoStorageYard, restVolSup: float) -> SolucaoStorageYard:
         tInicio = time.time()
@@ -66,7 +68,7 @@ class Heuristicas:
 
         res = SolucaoStorageYard()
         res.patios = [0 for _ in range(self.NUM_PATIOS)]
-        res.volumes = [0 for _ in range(self.NUM_PATIOS)]
+        res.volumes = [0.0 for _ in range(self.NUM_PATIOS)]
 
         # gera os números aleatórios de acordo com o número de pátios
         for i in range(self.NUM_PATIOS):
@@ -80,15 +82,40 @@ class Heuristicas:
             patios[patio - 1] = 1
             res.patios[i] = patio
 
-        # res = self.calculaFOPatio(floresta, distancias, res, restVolSup)
-        res2dict = TadRoadForest.calculaFOPatio(res, restVolSup)
-        res2 = SolucaoStorageYard.from_dict(res2dict)
+        res = self.calculaFOPatio(floresta, distancias, res, restVolSup)
+        # TadRoadForest.calculaFOPatio(res, restVolSup)
+        # res = SolucaoStorageYard.from_dict(res2dict)
+        # print(f"Patios: {res.patios.__len__()}")
+        # print(f"Patios: {res.patios}")
+        # print(f"Volumes: {res.volumes}")
+        # print(f"Distancia Total: {res.distanciaTotal}")
+        # print(f"FO: {res.FO}")
+        # print(f"Tempo Solução: {res.tempoSol}")
+        # print(f"Tempo: {res.tempo}")
+        # print(f"Num Iterações: {res.numIteracoes}")
+        # print(f"Num Viáveis: {res.numViaveis}")
+        # print(f"Num Inváveis: {res.numInviaveis}")
+        # print(f"Viável: {res.viavel}")
+        # print(f"Arvores: {res.arvores.__len__()}")
+        # print(f"Arvores: {res.arvores}")
+        # print(f"Tempo Cálculo FO Total: {res.tempoCalculoFO_Total}")
+        # print(f"Tempo Cálculo FO SA: {res.tempoCalculoFO_SA}")
+        # print(f"Tempo Cálculo FO Heurística: {res.tempoCalculoFO_Heuristica}")
+        # print(f"Tempo SA: {res.tempoSA}")
+        # print(f"Tempo Heurística: {res.tempoHeuristica}")
+        # print(f"Tempo Total: {res.tempoTotal}")
+        # print(f"T: {res.t}")
+        # print(f"Tempo Djikstra: {res.tempoDjisktra}")
         # print(f"Qgis FO: {res.FO}")
         # print(f"Num patios: {self.NUM_PATIOS}")
         # print(type(res2), res2)
         # print(res.arvores)
         # print(res2.arvores)
-        return res2
+        
+        # del res2dict
+        # gc.collect()
+
+        return res
 
     def heuConstrutivaIter(self, floresta: list[ArvoreExploravel], distancias: list[list[float]], num_iteracoes: int, restVolSup: float) -> SolucaoStorageYard:
         tInicio = time.time()
@@ -105,6 +132,7 @@ class Heuristicas:
         # laço que faz a busca aleatório e gulosa
         for i in range(num_iteracoes):
             cont = cont + 1
+            print("TESTE\n\n")
             res = self.obterSolAleatoria(floresta, distancias, restVolSup)
             tempoCalculoFOHeuristica += res.t
 

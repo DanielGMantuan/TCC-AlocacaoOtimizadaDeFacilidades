@@ -4,6 +4,7 @@ from .Heuristicas import Heuristicas
 from random import seed, randint
 import time
 import math
+import gc
 import copy
 from alocacao_otimizada import TadRoadForest
 
@@ -35,12 +36,15 @@ class SA:
         # depois de selecionar um número, marca ele como já tendo sido selecionado
         patios[vizinho - 1] = 1
 
-        # heuristica = Heuristicas(self.NUM_PATIOS, self.NUM_ARVORES_EXPLORAVEIS, self.DISTANCIA_MAXIMA, self.NUM_VERTICES_PATIOS, self.PENALIZACAO_VOLUME)
-        # # atualiza árvores alocadas e calcula FO ----------- falta implementar essa parte do java
-        # solAtual = heuristica.calculaFOPatio(floresta, distancias, solAtual, restVolSup)
+        heuristica = Heuristicas(self.NUM_PATIOS, self.NUM_ARVORES_EXPLORAVEIS, self.DISTANCIA_MAXIMA, self.NUM_VERTICES_PATIOS, self.PENALIZACAO_VOLUME)
+        # atualiza árvores alocadas e calcula FO ----------- falta implementar essa parte do java
+        solAtual = heuristica.calculaFOPatio(floresta, distancias, solAtual, restVolSup)
 
-        solAtualDict = TadRoadForest.calculaFOPatio(solAtual, restVolSup)
-        solAtual = SolucaoStorageYard.from_dict(solAtualDict)
+        # TadRoadForest.calculaFOPatio(solAtual, restVolSup)
+        # solAtual = SolucaoStorageYard.from_dict(solAtualDict)
+
+        # del solAtualDict
+        # gc.collect()
 
         return solAtual
 

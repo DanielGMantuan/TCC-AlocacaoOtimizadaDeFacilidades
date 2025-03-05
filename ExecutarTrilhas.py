@@ -395,16 +395,16 @@ class ExecutarTrilhas:
             
         tempoRoadTotal = (time.time() - tInicial) / 100.0
         distanciaYardMedia = distanciaYardMedia + (FOYardTotal / NUM_ARVORES_EXPLORAVEIS)
-        print("-------- Resultado final de patios -------- ")
-        print( "Distancia media\t Fo total\t Tempo (s)\n")
-        print( str(distanciaYardMedia)+" \t")
-        print( str(FOYardTotal)+"\t")
-        print( str(tempoYardTotal)+"\n")
+        # print("-------- Resultado final de patios -------- ")
+        # print( "Distancia media\t Fo total\t Tempo (s)\n")
+        # print( str(distanciaYardMedia)+" \t")
+        # print( str(FOYardTotal)+"\t")
+        # print( str(tempoYardTotal)+"\n")
 
-        print("-------- Resultado final de trilhas --------")
-        print( "Distancia media\t Fo total\t Tempo (s)\n")
-        print( str(distanciaRoadTotal)+" \t")
-        print( str(FORoadTotal)+"\t")
-        print( str(tempoRoadTotal)+"\n")
+        # print("-------- Resultado final de trilhas --------")
+        # print( "Distancia media\t Fo total\t Tempo (s)\n")
+        # print( str(distanciaRoadTotal)+" \t")
+        # print( str(FORoadTotal)+"\t")
+        # print( str(tempoRoadTotal)+"\n")
 
         return solucaoTrilha

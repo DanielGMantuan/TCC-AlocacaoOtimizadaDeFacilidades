@@ -30,6 +30,7 @@ class SolucaoStorageYard:
         instance.FO = data['FO']
         instance.tempoSol = data['tempoSol']
         instance.tempo = data['tempo']
+        instance.t = data['t']
         instance.numIteracoes = data['numIteracoes']
         instance.numViaveis = data['numViaveis']
         instance.numInviaveis = data['numInviaveis']
@@ -104,4 +105,24 @@ class SolucaoStorageYard:
                 arquivo.write("Patio\tId_arvore\tNum_Arvores\n")
                 for j in range(len(self.arvores[i])):
                     arquivo.write(str(self.patios[i]) +"\t"+ str(self.arvores[i][j]['id']) + "\t" + str(self.arvores[i][j]['numero']) + "\n")
-    
+
+    def print_info(self):
+        print(f"Patios: {self.patios}")
+        print(f"Volumes: {self.volumes}")
+        print(f"Distancia Total: {self.distanciaTotal}")
+        print(f"FO: {self.FO}")
+        print(f"Tempo Solução: {self.tempoSol}")
+        print(f"Tempo: {self.tempo}")
+        print(f"Num Iterações: {self.numIteracoes}")
+        print(f"Num Viáveis: {self.numViaveis}")
+        print(f"Num Inváveis: {self.numInviaveis}")
+        print(f"Viável: {self.viavel}")
+        print(f"Árvores: {self.arvores}")
+        print(f"Tempo Cálculo FO Total: {self.tempoCalculoFO_Total}")
+        print(f"Tempo Cálculo FO SA: {self.tempoCalculoFO_SA}")
+        print(f"Tempo Cálculo FO Heurística: {self.tempoCalculoFO_Heuristica}")
+        print(f"Tempo SA: {self.tempoSA}")
+        print(f"Tempo Heurística: {self.tempoHeuristica}")
+        print(f"Tempo Total: {self.tempoTotal}")
+        print(f"T: {self.t}")
+        print(f"Tempo Djikstra: {self.tempoDjisktra}")

@@ -421,7 +421,7 @@ class alocacao_otimizada:
         ### ---- FIM TESTANDO ENTRADA FIXA ---- ###
         
         # Definindo a floresta e a distancia globalmente no modulo criado
-        TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
+        # TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
 
         for i in range(1, 2):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
@@ -441,7 +441,7 @@ class alocacao_otimizada:
             solPatios = heuristica.heuConstrutivaIter(arvoresExploraveis, distanciasPatArv, NUM_ITERACOES, restVolSup)
 
             if useSimulatedAnnealing == True:
-                print("Simulated Annealing")
+                # print("Simulated Annealing")
                 sa = SA(NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, DISTANCIA_MAXIMA, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, TEMPOEXEC)
                 solPatios = sa.SAStorageYard(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup, TAXARESFRIAMENTO_YARD, ITERACOESVIZINHANCA_YARD, TEMPERATURAINICIAL_YARD, TEMPERATURACONGELAMENTO_YARD)
 
