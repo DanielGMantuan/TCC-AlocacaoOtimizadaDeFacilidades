@@ -109,7 +109,6 @@ class SA:
                         melhorSol = vizinho
                         melhorSol.tempoSol = time.time() - tfInicio # get_time
                 else:
-                    # x = (randint(1, 32767) % 1001)
                     x = randint(0, 1000)
                     x = x / 1000
                     if x < math.pow(math.e, (-variacao / temp)):

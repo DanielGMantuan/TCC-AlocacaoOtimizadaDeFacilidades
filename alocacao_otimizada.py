@@ -324,7 +324,7 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 12 * 60 * 60 # em horas
+        TEMPOEXEC = 16 * 60 * 60 # em horas
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
@@ -374,7 +374,7 @@ class alocacao_otimizada:
 
         
 
-        #---------------DEFININDO NUMERO DE ACESSOS----------------- 
+        # # #---------------DEFININDO NUMERO DE ACESSOS----------------- # # #
         # i = 1   
         # estradaDeAcesso = getAccesPoints(dlg)
         # NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
@@ -383,10 +383,10 @@ class alocacao_otimizada:
         #     QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
         #     return
         
-        # path = fr"{path}\resultado{str(i)}"
-        # if os.path.exists(path):
+        # pathArquivos = fr"{path}\resultado{str(i)}"
+        # if os.path.exists(pathArquivos):
         #     # Deletar o diretório e todo o conteúdo
-        #     shutil.rmtree(path)
+        #     shutil.rmtree(pathArquivos)
 
         # solPatios = SolucaoStorageYard()
         # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
@@ -407,23 +407,23 @@ class alocacao_otimizada:
         # trilha = ExecutarTrilhas()
         # solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-        # geraLinhas(solRoad.roads, area, i, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-        # geraTrilhas(solTrilha, area, i, path)
-        # geraPontosPatiosMarcelo(solPatios, camadaPatio, i, path)
+        # geraLinhas(solRoad.roads, area, i, pathArquivos) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+        # geraTrilhas(solTrilha, area, i, pathArquivos)
+        # geraPontosPatiosMarcelo(solPatios, camadaPatio, i, pathArquivos)
         # for j in range(len(solPatios.arvores)):
-        #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, path)
+        #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, pathArquivos)
 
-        # solPatios.fileWritter(i, restVolSup, path)
-        # solRoad.fileWritter(i, path)
+        # solPatios.fileWritter(i, restVolSup, pathArquivos)
+        # solRoad.fileWritter(i, pathArquivos)
         # for j in range(len(solTrilha)):
-        #     solTrilha[j].fileWritter(1, path)
+        #     solTrilha[j].fileWritter(i, pathArquivos)
 
-        ### ---- FIM TESTANDO ENTRADA FIXA ---- ###
+        # # # ---- FIM TESTANDO ENTRADA FIXA ---- ###
         
         # Definindo a floresta e a distancia globalmente no modulo criado
         # TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
 
-        for i in range(1, 2):
+        for i in range(0, 0):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
             estradaDeAcesso = getAccesPoints(dlg)
             NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
@@ -432,10 +432,10 @@ class alocacao_otimizada:
                 QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
                 return
             
-            path = fr"{path}\resultado{str(i)}"
-            if os.path.exists(path):
+            pathArquivos = fr"{path}\resultado{str(i)}"
+            if os.path.exists(pathArquivos):
                 # Deletar o diretório e todo o conteúdo
-                shutil.rmtree(path)
+                shutil.rmtree(pathArquivos)
 
             solPatios = SolucaoStorageYard()
             solPatios = heuristica.heuConstrutivaIter(arvoresExploraveis, distanciasPatArv, NUM_ITERACOES, restVolSup)
@@ -460,18 +460,18 @@ class alocacao_otimizada:
             trilha = ExecutarTrilhas()
             solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-            geraLinhas(solRoad.roads, area, i, path) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-            geraTrilhas(solTrilha, area, i, path)
-            geraPontosPatiosMarcelo(solPatios, camadaPatio, i, path)
+            geraLinhas(solRoad.roads, area, i, pathArquivos) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+            geraTrilhas(solTrilha, area, i, pathArquivos)
+            geraPontosPatiosMarcelo(solPatios, camadaPatio, i, pathArquivos)
             for j in range(len(solPatios.arvores)):
-                geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, path)
+                geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, pathArquivos)
 
             solPatios.tempoDjisktra = solRoad.tempoTotal
             solPatios.tempoTotal = time.time() - tempoInicial
-            solPatios.fileWritter(i, restVolSup, path)
-            solRoad.fileWritter(i, path)
+            solPatios.fileWritter(i, restVolSup, pathArquivos)
+            solRoad.fileWritter(i, pathArquivos)
             for j in range(len(solTrilha)):
-                solTrilha[j].fileWritter(1, path)
+                solTrilha[j].fileWritter(1, pathArquivos)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 
