@@ -132,7 +132,6 @@ class Heuristicas:
         # laço que faz a busca aleatório e gulosa
         for i in range(num_iteracoes):
             cont = cont + 1
-            print("TESTE\n\n")
             res = self.obterSolAleatoria(floresta, distancias, restVolSup)
             tempoCalculoFOHeuristica += res.t
 

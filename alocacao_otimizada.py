@@ -331,7 +331,7 @@ class alocacao_otimizada:
 
         area = preProcLayer.lerInstanciaVertices(camadaVertices)
 
-        patios = preProcLayer.lerInstanciaPatiosDadosMarcelo(camadaPatio, area)
+        patios = preProcLayer.lerInstanciaPatios(camadaPatio, area)
 
         arvoresExploraveis = preProcLayer.lerInstanciaArvoresExploraveis(camadaFloresta_exp)
 
@@ -423,7 +423,7 @@ class alocacao_otimizada:
         # Definindo a floresta e a distancia globalmente no modulo criado
         # TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
 
-        for i in range(0, 0):
+        for i in range(1, 2):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
             estradaDeAcesso = getAccesPoints(dlg)
             NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
@@ -468,10 +468,12 @@ class alocacao_otimizada:
 
             solPatios.tempoDjisktra = solRoad.tempoTotal
             solPatios.tempoTotal = time.time() - tempoInicial
-            solPatios.fileWritter(i, restVolSup, pathArquivos)
-            solRoad.fileWritter(i, pathArquivos)
+            FOTotalTrilha = 0
             for j in range(len(solTrilha)):
                 solTrilha[j].fileWritter(1, pathArquivos)
+                FOTotalTrilha = solTrilha[j].FOTotal 
+            solPatios.fileWritter(i, restVolSup, pathArquivos)
+            solRoad.fileWritter(i, pathArquivos, FOTotalTrilha)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 

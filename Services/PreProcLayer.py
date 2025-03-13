@@ -33,10 +33,10 @@ class PreProcLayer:
         for arvore in floresta.getFeatures():
             desvio = Desvio()
             
-            desvio.id = int(arvore.attribute("ID"))
-            desvio.x = float(arvore.attribute("X"))
-            desvio.y = float(arvore.attribute("Y"))
-            desvio.z = float(arvore.attribute("Z"))
+            # desvio.id = int(arvore.attribute("Id"))
+            desvio.x = float(arvore.attribute("X_Este"))
+            desvio.y = float(arvore.attribute("Y_Norte"))
+            desvio.z = float(arvore.attribute("z"))
 
             desvios.append(desvio)
         
@@ -46,7 +46,7 @@ class PreProcLayer:
         vetor: list[int] = [0 for _ in range(self.numVertices)]
 
         for verticeInund in inundacao.getFeatures():
-            id = verticeInund.attribute("id")
+            id = verticeInund.attribute("Id")
             vetor[id - 1] = 1
         
         return vetor
@@ -55,7 +55,7 @@ class PreProcLayer:
         vetor: list[int] = [0 for _ in range(self.numVertices)]
 
         for verticeApp in app.getFeatures():
-            id = verticeApp.attribute("id")
+            id = verticeApp.attribute("Id")
             vetor[id - 1] = 1
         
         return vetor
@@ -66,7 +66,7 @@ class PreProcLayer:
         for verticeInc in inclinacao.getFeatures():
             verticeInclinacao = Inclinacao()
 
-            verticeInclinacao.id = int(verticeInc.attribute("id"))
+            # verticeInclinacao.id = int(verticeInc.attribute("id"))
             verticeInclinacao.x = float(verticeInc.attribute("x"))
             verticeInclinacao.y = float(verticeInc.attribute("y"))
             verticeInclinacao.z = float(verticeInc.attribute("z"))
@@ -136,13 +136,13 @@ class PreProcLayer:
             arvore = ArvoreExploravel()
 
             arvore.id = arvoreLayer.attribute("id")
-            arvore.numero = arvoreLayer.attribute("N_Arvore")
-            arvore.DAP = arvoreLayer.attribute("DAP")
-            arvore.H = arvoreLayer.attribute("HC")
-            arvore.areaBasal = arvoreLayer.attribute("G")
-            arvore.volume = arvoreLayer.attribute("Volume")
-            arvore.x = arvoreLayer.attribute("X")
-            arvore.y = arvoreLayer.attribute("Y")
+            arvore.numero = arvoreLayer.attribute("N__Arvore")
+            # arvore.DAP = arvoreLayer.attribute("DAP")
+            # arvore.H = arvoreLayer.attribute("HC")
+            # arvore.areaBasal = arvoreLayer.attribute("G")
+            arvore.volume = arvoreLayer.attribute("Volume_Eq")
+            arvore.x = arvoreLayer.attribute("X_Este")
+            arvore.y = arvoreLayer.attribute("Y_Norte")
             arvore.z = arvoreLayer.attribute("Z")
 
             vetor.append(arvore)
