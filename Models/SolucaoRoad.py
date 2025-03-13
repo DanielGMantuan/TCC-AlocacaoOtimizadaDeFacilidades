@@ -72,7 +72,7 @@ class SolucaoRoads:
         
         return result
     
-    def fileWritter(self, index: int, path: str, F0TotalTrilhas: float):
+    def fileWritter(self, index: int, path: str, F0TotalTrilhas: float, distanciaTotalTrilha: float):
         caminho = fr"{path}\estrada.txt"
         with open(caminho, "w") as arquivo:
             arquivo.write("---- Solucao Roads ----" + "\n")
@@ -80,6 +80,7 @@ class SolucaoRoads:
             arquivo.write("distancia total\n" + str(self.distanciaTotal) + "\n")
             arquivo.write("FOTotal\n" + str(self.FOTotal) + "\n")
             arquivo.write("FOTotalTrilhas\n" + str(F0TotalTrilhas) + "\n")
+            arquivo.write("Distancia total trilhas\n" + str(distanciaTotalTrilha) + "\n")
             arquivo.write("roads: " + "\n")
             for i in range(len(self.roads)):
                 arquivo.write("Type:" + str(self.typeRoad[i]) + "\n")

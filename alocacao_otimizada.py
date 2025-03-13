@@ -469,11 +469,14 @@ class alocacao_otimizada:
             solPatios.tempoDjisktra = solRoad.tempoTotal
             solPatios.tempoTotal = time.time() - tempoInicial
             FOTotalTrilha = 0
+            distanciaTotalTrilha = 0
             for j in range(len(solTrilha)):
                 solTrilha[j].fileWritter(1, pathArquivos)
-                FOTotalTrilha = solTrilha[j].FOTotal 
+                if(solTrilha[j].distanciaTotal > 0):
+                    FOTotalTrilha += solTrilha[j].FOTotal
+                    distanciaTotalTrilha += solTrilha[j].distanciaTotal
             solPatios.fileWritter(i, restVolSup, pathArquivos)
-            solRoad.fileWritter(i, pathArquivos, FOTotalTrilha)
+            solRoad.fileWritter(i, pathArquivos, FOTotalTrilha, distanciaTotalTrilha)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 
