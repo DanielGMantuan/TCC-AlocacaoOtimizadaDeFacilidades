@@ -19,8 +19,8 @@ class PreProcLayer:
             vertice = Area()
 
             vertice.id = int(verticeLayer.attribute("id"))
-            vertice.x = float(verticeLayer.attribute("x"))
-            vertice.y = float(verticeLayer.attribute("y"))
+            vertice.x = float("{:.4f}".format(verticeLayer.attribute("x")))
+            vertice.y = float("{:.4f}".format(verticeLayer.attribute("y")))
             vertice.z = float(verticeLayer.attribute("z"))
             
             vetor.append(vertice)
@@ -118,8 +118,8 @@ class PreProcLayer:
         for patioLayer in patios.getFeatures():
             patio = Patio()
             patio.id = int(patioLayer.attribute("id")) 
-            patio.x = float(patioLayer.attribute("x"))
-            patio.y = float(patioLayer.attribute("y"))
+            patio.x = float("{:.4f}".format(patioLayer.attribute("x")))
+            patio.y = float("{:.4f}".format(patioLayer.attribute("y")))
             patio.z = float(patioLayer.attribute("z"))
             vertice = buscaPatioInLayer(patio, area)
             if(vertice != -1):
