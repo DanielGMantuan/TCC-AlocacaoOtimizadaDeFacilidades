@@ -353,7 +353,7 @@ class alocacao_otimizada:
             app = None
 
         # Pega o mock dos valores de distancia
-        distanciasPatArv = preProcLayer.lerArquivoDistancias(patArvoreDistPath)
+        distanciasPatArv = preProcLayer.lerNovoArquivoDistancias(patArvoreDistPath)
 
         volumeTot = preProcLayer.calculaVolume(arvoresExploraveis, NUM_ARVORES_EXPLORAVEIS)
 
@@ -375,54 +375,54 @@ class alocacao_otimizada:
         
 
         # # #---------------DEFININDO NUMERO DE ACESSOS----------------- # # #
-        # i = 1   
-        # estradaDeAcesso = getAccesPoints(dlg)
-        # NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
+        i = 1   
+        estradaDeAcesso = getAccesPoints(dlg)
+        NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
 
-        # if(NUM_ACCESS_ROAD == 0):
-        #     QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
-        #     return
+        if(NUM_ACCESS_ROAD == 0):
+            QtWidgets.QMessageBox.warning(dlg, "Sem acessos", "Por favor, insira pelo menos um acesso.")
+            return
         
-        # pathArquivos = fr"{path}\resultado{str(i)}"
-        # if os.path.exists(pathArquivos):
-        #     # Deletar o diretório e todo o conteúdo
-        #     shutil.rmtree(pathArquivos)
+        pathArquivos = fr"{path}\resultado{str(i)}"
+        if os.path.exists(pathArquivos):
+            # Deletar o diretório e todo o conteúdo
+            shutil.rmtree(pathArquivos)
 
-        # solPatios = SolucaoStorageYard()
-        # # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
-        # solPatios.patios = [2264,2678,1826,2359,2915,3269,1904,1529,434,2180,575,1536,972,2998,2821,338,14,2493,861,348,3185,1175,1765,309,1977] resultado inst 2
-        # solPatios = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup)
+        solPatios = SolucaoStorageYard()
+        # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        solPatios.patios = [2264,2678,1826,2359,2915,3269,1904,1529,434,2180,575,1536,972,2998,2821,338,14,2493,861,348,3185,1175,1765,309,1977] #resultado inst 2
+        solPatios = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup)
 
-        # #---------------DEFININDO GRAFO-----------------
-        # grafo = Grafo()
-        # grafo.cria_Grafo(NUM_VERTICES, 8, 1)
-        # grafo.insereArestaArea(area, desvios, inundacao, app, inclinacao)
+        #---------------DEFININDO GRAFO-----------------
+        grafo = Grafo()
+        grafo.cria_Grafo(NUM_VERTICES, 8, 1)
+        grafo.insereArestaArea(area, desvios, inundacao, app, inclinacao)
 
-        # # -------------- ROADS -------------
-        # solRoad_aux = RoadsAprovTrecho()
-        # solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, solPatios, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
+        # -------------- ROADS -------------
+        solRoad_aux = RoadsAprovTrecho()
+        solRoad = solRoad_aux.roadsAprovTrecho(grafo, area, patios, solPatios, estradaDeAcesso, NUM_PATIOS, NUM_VERTICES, NUM_ACCESS_ROAD)
 
-        # # -------------- TRAILS -------------
-        # arvoreSelPatios = marcaArvoresPatios(solPatios, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
-        # quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
-        # trilha = ExecutarTrilhas()
-        # solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
+        # -------------- TRAILS -------------
+        arvoreSelPatios = marcaArvoresPatios(solPatios, distanciasPatArv, NUM_ARVORES_EXPLORAVEIS, NUM_PATIOS)
+        quantidadeArvores = quantidadeArvoresPatio(arvoreSelPatios, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS)
+        trilha = ExecutarTrilhas()
+        solTrilha = trilha.trails( area, solRoad, patios, solPatios, arvoresExploraveis, arvoreSelPatios, distanciasPatArv, app, quantidadeArvores, restVolSup, desvios, NUM_VERTICES, NUM_PATIOS, NUM_ROADS, NUM_ARVORES_EXPLORAVEIS, NUM_ARV_TRILHA)
 
-        # geraLinhas(solRoad.roads, area, i, pathArquivos) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
-        # geraTrilhas(solTrilha, area, i, pathArquivos)
-        # geraPontosPatiosMarcelo(solPatios, camadaPatio, i, pathArquivos)
-        # for j in range(len(solPatios.arvores)):
-        #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, pathArquivos)
+        geraLinhas(solRoad.roads, area, i, pathArquivos) #Aqui esta desenhando a linha do ponto inicial ate o ponto final
+        geraTrilhas(solTrilha, area, i, pathArquivos)
+        geraPontosPatiosMarcelo(solPatios, camadaPatio, i, pathArquivos)
+        for j in range(len(solPatios.arvores)):
+            geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, pathArquivos)
 
-        # solPatios.fileWritter(i, restVolSup, pathArquivos)
-        # FOTotalTrilha = 0
-        # distanciaTotalTrilha = 0
-        # for j in range(len(solTrilha)):
-        #     solTrilha[j].fileWritter(1, pathArquivos)
-        #     if(solTrilha[j].distanciaTotal > 0):
-        #         FOTotalTrilha += solTrilha[j].FOTotal
-        #         distanciaTotalTrilha += solTrilha[j].distanciaTotal
-        # solRoad.fileWritter(i, pathArquivos, FOTotalTrilha, distanciaTotalTrilha)
+        solPatios.fileWritter(i, restVolSup, pathArquivos)
+        FOTotalTrilha = 0
+        distanciaTotalTrilha = 0
+        for j in range(len(solTrilha)):
+            solTrilha[j].fileWritter(1, pathArquivos)
+            if(solTrilha[j].distanciaTotal > 0):
+                FOTotalTrilha += solTrilha[j].FOTotal
+                distanciaTotalTrilha += solTrilha[j].distanciaTotal
+        solRoad.fileWritter(i, pathArquivos, FOTotalTrilha, distanciaTotalTrilha)
 
 
         # # # ---- FIM TESTANDO ENTRADA FIXA ---- ###

@@ -7,6 +7,7 @@ from ..Models.ArvoreRemanescente import ArvoreRemanescete
 from ..Models.ArvoreExploravel import ArvoreExploravel
 from .commons import buscapatio, buscaPatioInLayer
 from typing import List
+import pandas as pd
 
 class PreProcLayer:
     def __init__(self, NUM_VERTICES):
@@ -96,6 +97,17 @@ class PreProcLayer:
                 linha = [float(valor.replace(',', '.').strip()) for valor in valores]  # Remove espaços e converte para float
                 matriz.append(linha)
         return matriz
+    
+    def lerNovoArquivoDistancias(self, filePath: str) -> list[list[float]]:
+        df = pd.read_csv(filePath, sep="\t") 
+
+        # Ordenar pelo número do pátio
+        df = df.sort_values(by=["patio"])
+
+        # Criar a matriz pivoteando os dados
+        matriz = df.pivot(index="arvore", columns="patio", values="distancia_total").fillna(0)
+
+        return matriz.values.tolist()
 
     def lerInstanciaPatiosDadosMarcelo(self, patios, area: list[Area]) -> list[Patio]:
         vetor: list[Patio] = []
