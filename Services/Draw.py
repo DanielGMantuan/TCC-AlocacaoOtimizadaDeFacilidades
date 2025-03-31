@@ -126,10 +126,10 @@ def geraPontosPatiosMarcelo(solPatios, patios, i, path):
     # Adiciona as features à camada
     for patio in patios.getFeatures():
         for idPatio in solPatios.patios:
-            if idPatio == patio.attribute("PT"):
+            if idPatio == patio.attribute("id"):
                 f = QgsFeature()
-                f.setAttributes([patio.attribute("PT"), patio.attribute("POINT_X"), patio.attribute("POINT_Y")])
-                f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(patio.attribute("POINT_X")), float(patio.attribute("POINT_Y")))))
+                f.setAttributes([patio.attribute("id"), patio.attribute("x"), patio.attribute("y")])
+                f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(patio.attribute("x")), float(patio.attribute("y")))))
                 provider.addFeature(f)
     
     nome_arquivo = fr"{path}\patio\patio.shp"

@@ -324,14 +324,14 @@ class alocacao_otimizada:
 
         #--------------------- Tempos -----------------
 
-        TEMPOEXEC = 16 * 60 * 60 # em horas
+        TEMPOEXEC = 15 * 60 * 60 # em horas
 
         #--------------- Pré Processamento -----------------
         preProcLayer = PreProcLayer(NUM_VERTICES)
 
         area = preProcLayer.lerInstanciaVertices(camadaVertices)
 
-        patios = preProcLayer.lerInstanciaPatiosDadosMarcelo(camadaPatio, area)
+        patios = preProcLayer.lerInstanciaPatios(camadaPatio, area)
 
         arvoresExploraveis = preProcLayer.lerInstanciaArvoresExploraveis(camadaFloresta_exp)
 
@@ -353,7 +353,7 @@ class alocacao_otimizada:
             app = None
 
         # Pega o mock dos valores de distancia
-        distanciasPatArv = preProcLayer.lerArquivoDistancias(patArvoreDistPath)
+        distanciasPatArv = preProcLayer.lerNovoArquivoDistancias(patArvoreDistPath)
 
         volumeTot = preProcLayer.calculaVolume(arvoresExploraveis, NUM_ARVORES_EXPLORAVEIS)
 
@@ -389,7 +389,8 @@ class alocacao_otimizada:
         #     shutil.rmtree(pathArquivos)
 
         # solPatios = SolucaoStorageYard()
-        # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # # solPatios.patios = [547, 273, 1358, 949, 1434, 812, 1525, 370, 296, 309, 1414, 969, 735, 176]
+        # solPatios.patios = [2264,2678,1826,2359,2915,3269,1904,1529,434,2180,575,1536,972,2998,2821,338,14,2493,861,348,3185,1175,1765,309,1977] #resultado inst 2
         # solPatios = heuristica.calculaFOPatio(arvoresExploraveis, distanciasPatArv, solPatios, restVolSup)
 
         # #---------------DEFININDO GRAFO-----------------
@@ -414,16 +415,22 @@ class alocacao_otimizada:
         #     geraPontosArvores(solPatios.arvores[j], arvoresExploraveis, solPatios.patios[j], 1, pathArquivos)
 
         # solPatios.fileWritter(i, restVolSup, pathArquivos)
-        # solRoad.fileWritter(i, pathArquivos)
+        # FOTotalTrilha = 0
+        # distanciaTotalTrilha = 0
         # for j in range(len(solTrilha)):
-        #     solTrilha[j].fileWritter(i, pathArquivos)
+        #     solTrilha[j].fileWritter(1, pathArquivos)
+        #     if(solTrilha[j].distanciaTotal > 0):
+        #         FOTotalTrilha += solTrilha[j].FOTotal
+        #         distanciaTotalTrilha += solTrilha[j].distanciaTotal
+        # solRoad.fileWritter(i, pathArquivos, FOTotalTrilha, distanciaTotalTrilha)
+
 
         # # # ---- FIM TESTANDO ENTRADA FIXA ---- ###
         
         # Definindo a floresta e a distancia globalmente no modulo criado
         # TadRoadForest.definicaoVariaveisGlobais(arvoresExploraveis, distanciasPatArv, NUM_PATIOS, NUM_ARVORES_EXPLORAVEIS, NUM_VERTICES_PATIOS, PENALIZACAO_VOLUME, DISTANCIA_MAXIMA)
 
-        for i in range(0, 0):
+        for i in range(0, 1):
             #---------------DEFININDO NUMERO DE ACESSOS-----------------    
             estradaDeAcesso = getAccesPoints(dlg)
             NUM_ACCESS_ROAD = len(estradaDeAcesso.inicio)
@@ -468,10 +475,15 @@ class alocacao_otimizada:
 
             solPatios.tempoDjisktra = solRoad.tempoTotal
             solPatios.tempoTotal = time.time() - tempoInicial
-            solPatios.fileWritter(i, restVolSup, pathArquivos)
-            solRoad.fileWritter(i, pathArquivos)
+            FOTotalTrilha = 0
+            distanciaTotalTrilha = 0
             for j in range(len(solTrilha)):
                 solTrilha[j].fileWritter(1, pathArquivos)
+                if(solTrilha[j].distanciaTotal > 0):
+                    FOTotalTrilha += solTrilha[j].FOTotal
+                    distanciaTotalTrilha += solTrilha[j].distanciaTotal
+            solPatios.fileWritter(i, restVolSup, pathArquivos)
+            solRoad.fileWritter(i, pathArquivos, FOTotalTrilha, distanciaTotalTrilha)
 
         QtWidgets.QMessageBox.information(dlg, "Success", "Terminou a execucao!")
 

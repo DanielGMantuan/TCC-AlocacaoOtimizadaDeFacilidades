@@ -7,6 +7,7 @@ from ..Models.ArvoreRemanescente import ArvoreRemanescete
 from ..Models.ArvoreExploravel import ArvoreExploravel
 from .commons import buscapatio, buscaPatioInLayer
 from typing import List
+import pandas as pd
 
 class PreProcLayer:
     def __init__(self, NUM_VERTICES):
@@ -19,8 +20,8 @@ class PreProcLayer:
             vertice = Area()
 
             vertice.id = int(verticeLayer.attribute("id"))
-            vertice.x = float(verticeLayer.attribute("x"))
-            vertice.y = float(verticeLayer.attribute("y"))
+            vertice.x = float("{:.4f}".format(verticeLayer.attribute("x")))
+            vertice.y = float("{:.4f}".format(verticeLayer.attribute("y")))
             vertice.z = float(verticeLayer.attribute("z"))
             
             vetor.append(vertice)
@@ -33,10 +34,10 @@ class PreProcLayer:
         for arvore in floresta.getFeatures():
             desvio = Desvio()
             
-            desvio.id = int(arvore.attribute("ID"))
-            desvio.x = float(arvore.attribute("X"))
-            desvio.y = float(arvore.attribute("Y"))
-            desvio.z = float(arvore.attribute("Z"))
+            # desvio.id = int(arvore.attribute("Id"))
+            desvio.x = float(arvore.attribute("X_Este"))
+            desvio.y = float(arvore.attribute("Y_Norte"))
+            desvio.z = float(arvore.attribute("z"))
 
             desvios.append(desvio)
         
@@ -46,7 +47,7 @@ class PreProcLayer:
         vetor: list[int] = [0 for _ in range(self.numVertices)]
 
         for verticeInund in inundacao.getFeatures():
-            id = verticeInund.attribute("id")
+            id = verticeInund.attribute("Id")
             vetor[id - 1] = 1
         
         return vetor
@@ -55,7 +56,7 @@ class PreProcLayer:
         vetor: list[int] = [0 for _ in range(self.numVertices)]
 
         for verticeApp in app.getFeatures():
-            id = verticeApp.attribute("id")
+            id = verticeApp.attribute("Id")
             vetor[id - 1] = 1
         
         return vetor
@@ -66,7 +67,7 @@ class PreProcLayer:
         for verticeInc in inclinacao.getFeatures():
             verticeInclinacao = Inclinacao()
 
-            verticeInclinacao.id = int(verticeInc.attribute("id"))
+            # verticeInclinacao.id = int(verticeInc.attribute("id"))
             verticeInclinacao.x = float(verticeInc.attribute("x"))
             verticeInclinacao.y = float(verticeInc.attribute("y"))
             verticeInclinacao.z = float(verticeInc.attribute("z"))
@@ -96,6 +97,17 @@ class PreProcLayer:
                 linha = [float(valor.replace(',', '.').strip()) for valor in valores]  # Remove espaços e converte para float
                 matriz.append(linha)
         return matriz
+    
+    def lerNovoArquivoDistancias(self, filePath: str) -> list[list[float]]:
+        df = pd.read_csv(filePath, sep="\t") 
+
+        # Ordenar pelo número do pátio
+        df = df.sort_values(by=["patio"])
+
+        # Criar a matriz pivoteando os dados
+        matriz = df.pivot(index="arvore", columns="patio", values="distancia_total").fillna(0)
+
+        return matriz.values.tolist()
 
     def lerInstanciaPatiosDadosMarcelo(self, patios, area: list[Area]) -> list[Patio]:
         vetor: list[Patio] = []
@@ -118,8 +130,8 @@ class PreProcLayer:
         for patioLayer in patios.getFeatures():
             patio = Patio()
             patio.id = int(patioLayer.attribute("id")) 
-            patio.x = float(patioLayer.attribute("x"))
-            patio.y = float(patioLayer.attribute("y"))
+            patio.x = float("{:.4f}".format(patioLayer.attribute("x")))
+            patio.y = float("{:.4f}".format(patioLayer.attribute("y")))
             patio.z = float(patioLayer.attribute("z"))
             vertice = buscaPatioInLayer(patio, area)
             if(vertice != -1):
@@ -136,13 +148,13 @@ class PreProcLayer:
             arvore = ArvoreExploravel()
 
             arvore.id = arvoreLayer.attribute("id")
-            arvore.numero = arvoreLayer.attribute("N_Arvore")
-            arvore.DAP = arvoreLayer.attribute("DAP")
-            arvore.H = arvoreLayer.attribute("HC")
-            arvore.areaBasal = arvoreLayer.attribute("G")
-            arvore.volume = arvoreLayer.attribute("Volume")
-            arvore.x = arvoreLayer.attribute("X")
-            arvore.y = arvoreLayer.attribute("Y")
+            arvore.numero = arvoreLayer.attribute("N__Arvore")
+            # arvore.DAP = arvoreLayer.attribute("DAP")
+            # arvore.H = arvoreLayer.attribute("HC")
+            # arvore.areaBasal = arvoreLayer.attribute("G")
+            arvore.volume = arvoreLayer.attribute("Volume_Eq")
+            arvore.x = arvoreLayer.attribute("X_Este")
+            arvore.y = arvoreLayer.attribute("Y_Norte")
             arvore.z = arvoreLayer.attribute("Z")
 
             vetor.append(arvore)
