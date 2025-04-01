@@ -1,42 +1,71 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
 <body>
-<h3>Plugin Builder Results</h3>
 
-Congratulations! You just built a plugin for QGIS!<br/><br />
+    <h1>COMPFLOR: Complemento para Otimização do Planejamento Florestal</h1>
 
-<div id='help' style='font-size:.9em;'>
-Your plugin <b>alocacaoOtimizada</b> was created in:<br>
-&nbsp;&nbsp;<b>C:/Users/Usuário/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\alocacao_otimizada</b>
-<p>
-Your QGIS plugin directory is located at:<br>
-&nbsp;&nbsp;<b>C:/Users/Usuário/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins</b>
-<p>
-<h3>What's Next</h3>
-<ol>
-    <li>If resources.py is not present in your plugin directory, compile the resources file using pyrcc5 (simply use <b>pb_tool</b> or <b>make</b> if you have automake)
-    <li>Optionally, test the generated sources using <b>make test</b> (or run tests from your IDE)
-    <li>Copy the entire directory containing your new plugin to the QGIS plugin directory (see Notes below)
-    <li>Test the plugin by enabling it in the QGIS plugin manager
-    <li>Customize it by editing the implementation file <b>alocacao_otimizada.py</b>
-    <li>Create your own custom icon, replacing the default <b>icon.png</b>
-    <li>Modify your user interface by opening <b>alocacao_otimizada_dialog_base.ui</b> in Qt Designer
-</ol>
-Notes:
-<ul>
-    <li>You can use <b>pb_tool</b> to compile, deploy, and manage your plugin. Tweak the <i>pb_tool.cfg</i> file included with your plugin as you add files. Install <b>pb_tool</b> using 
-        <i>pip</i> or <i>easy_install</i>. See <b>http://loc8.cc/pb_tool</b> for more information.
-    <li>You can also use the <b>Makefile</b> to compile and deploy when you
-        make changes. This requires GNU make (gmake). The Makefile is ready to use, however you 
-        will have to edit it to add addional Python source files, dialogs, and translations.
-</ul>
-</div>
-<div style='font-size:.9em;'>
-<p>
-For information on writing PyQGIS code, see <b>http://loc8.cc/pyqgis_resources</b> for a list of resources.
-</p>
-</div>
-<p>
-&copy;2011-2019 GeoApt LLC - geoapt.com 
-</p>
+    <h2>Descrição</h2>
+    <p>O <strong>COMPFLOR</strong> é um software desenvolvido para otimizar o planejamento do Manejo Florestal Sustentável (MFS). Ele utiliza técnicas de otimização como <strong>Simulated Annealing (SA)</strong> e o algoritmo <strong>Dijkstra</strong> para minimizar os custos operacionais e o impacto ambiental na exploração florestal. O objetivo é auxiliar gestores na tomada de decisões estratégicas, contribuindo para a redução de custos e a preservação das áreas florestais.</p>
+
+    <h2>Funcionalidades Principais</h2>
+    <ul>
+        <li><strong>Alocação otimizada de pátios de estocagem:</strong> Utiliza o método <strong>Simulated Annealing</strong> para determinar a localização ideal dos pátios, reduzindo distâncias e custos.</li>
+        <li><strong>Definição de estradas florestais:</strong> Aplica o algoritmo <strong>Dijkstra</strong> para traçar as rotas mais curtas, conectando os pátios e minimizando a abertura de novas vias.</li>
+        <li><strong>Planejamento de trilhas de arraste:</strong> Seleciona pontos de facilidade e conecta-os aos pátios, garantindo menor impacto ambiental e eficiência logística.</li>
+        <li><strong>Geração de shapefiles:</strong> Cria arquivos geoespaciais para visualização clara da infraestrutura planejada.</li>
+    </ul>
+
+    <h2>Como Usar</h2>
+    <ol>
+        <li>Execute o software:
+            <pre><code>python compflor.py</code></pre>
+        </li>
+        <li>Insira os dados de entrada (vertices, pontos de pátios, APP, etc.).</li>
+        <li>Aguarde o processamento e visualize os resultados gerados.</li>
+    </ol>
+
+    <h2>Tecnologias Utilizadas</h2>
+    <ul>
+        <li><strong>Python</strong> para a implementação dos algoritmos.</li>
+        <li><strong>Sistemas de Informações Geográficas (SIG)</strong> para processamento de dados geoespaciais.</li>
+        <li><strong>Simulated Annealing (SA)</strong> e <strong>Dijkstra</strong> para otimização.</li>
+    </ul>
+
+    <h2>Licença</h2>
+    <p>Este projeto está licenciado sob a licença <strong>MIT</strong>. Consulte o arquivo <a href="LICENSE">LICENSE</a> para mais detalhes.</p>
+
+    <h2>Contato</h2>
+    <p>Para mais informações, entre em contato via <a href="mailto:daniel.mantuan@edu.ufes.br">daniel.mantuan@edu.ufes.br</a>.</p>
+
+    <h2>Referência do Artigo</h2>
+    <p>Para mais detalhes sobre este projeto, acesse o artigo: <a href="">Desenvolvimento de Complemento para Software de Geoprocessamento na Otimização do Planejamento Florestal</a>.</p>
+
 </body>
 </html>
